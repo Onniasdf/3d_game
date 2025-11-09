@@ -89,14 +89,6 @@ struct Vector3 {
         return {x, y, otherZ};
     }
 
-    static Vector3 fromAngle(const double yaw, const double pitch) {
-        Vector3 dir;
-        dir.x = std::cos(pitch) * std::sin(yaw);
-        dir.y = std::sin(pitch);
-        dir.z = std::cos(pitch) * std::cos(yaw);
-        return dir;
-    }
-
 private:
     static double getSign(double value) {
         if (value > 0) {

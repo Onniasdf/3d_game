@@ -12,21 +12,21 @@
 
 namespace engine {
 
-    template <Interactable TWorld>
+    template <engine::Interactable TWorld>
     class GameEngine {
         TWorld world;
         std::vector<Entity> entities;
         std::vector<std::function<void(WorldInterface<TWorld>&)>> callbacks;
         std::chrono::milliseconds updateDelay;
         Physics physics;
-        std::unique_ptr<RgbColour> colourMap;
+        RgbColour* colourMap;
         bool running = true;
         uint64_t tick = 0;
 
-        GameEngine(TWorld world, const std::chrono::milliseconds updateDelay, const Physics& physics, std::unique_ptr<RgbColour> colourMap) : world(world), updateDelay(updateDelay), physics(physics), colourMap(std::move(colourMap)) {}
-
         void update();
     public:
+        GameEngine(TWorld world, const std::chrono::milliseconds updateDelay, const Physics& physics, RgbColour* colourMap) : world(world), updateDelay(updateDelay), physics(physics), colourMap(colourMap) {}
+
         void onTick(const std::function<void(WorldInterface<TWorld>&)>& callback) {
             callbacks.push_back(callback);
         }

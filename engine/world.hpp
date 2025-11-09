@@ -1,16 +1,17 @@
 #ifndef INC_3D_GAME_WORLD_HPP
 #define INC_3D_GAME_WORLD_HPP
-#include "../datastructures/Vector3.hpp"
+#include "../datastructures/vector3.hpp"
 #include <concepts>
 #include <cstdint>
+#include <optional>
 
 namespace engine {
 
     template <typename T>
-    concept Interactable = requires(T t, Vector3& position, uint64_t id, std::optional<uint64_t> setId)
+    concept Interactable = requires(T t, Vector3& position, uint16_t id, std::optional<uint16_t> setId)
     {
         { t.set(position, setId) };
-        { t.get(position) } -> std::same_as<std::optional<uint64_t>>;
+        { t.get(position) } -> std::same_as<std::optional<uint16_t>>;
     };
 
     template <Interactable T>

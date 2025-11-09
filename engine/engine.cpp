@@ -1,4 +1,3 @@
-
 #include "engine.hpp"
 #include <cmath>
 
@@ -13,7 +12,7 @@ void engine::GameEngine<TWorld>::update() {
                 Vector3 point = e.position + offset;
                 point.z += hitboxPos;
                 if (std::optional<uint64_t> block = world.get(point); !block.has_value()) continue;
-                const Vector3 difference = offset.abs();
+                const Vector3 difference = offset.withZ(hitboxPos).abs();
                 if (difference.z <= e.hitbox.z) {
                     force.z = -e.velocity.z;
                 } else if (difference.y <= e.hitbox.y) {
@@ -36,7 +35,7 @@ void engine::GameEngine<TWorld>::run() {
     std::chrono::time_point<std::chrono::steady_clock> tickTime = std::chrono::steady_clock::now();
     while (running) {
         update();
-        WorldInterface<TWorld> interface {&world, colourMap.get(), &running, &entities, &physics};
+        WorldInterface<TWorld> interface {&world, colourMap, &running, &entities, &physics};
         for (auto& c : callbacks) {
             c(interface);
         }

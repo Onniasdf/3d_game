@@ -1,6 +1,7 @@
 #ifndef INC_3D_GAME_ENTITY_HPP
 #define INC_3D_GAME_ENTITY_HPP
-#include "../datastructures/Vector3.hpp"
+#include "../datastructures/vector3.hpp"
+#include "../datastructures/orientation.hpp"
 
 namespace engine {
     struct Physics {
@@ -8,6 +9,10 @@ namespace engine {
         double jumpSpeed;
         double movementAcceleration;
         double friction;
+
+        static Physics calculateFromMetersPerSecond(uint32_t ticks, double gravity, double movementSpeed) {
+
+        }
     };
 
     enum MovementState {
@@ -22,8 +27,8 @@ namespace engine {
         Vector3 hitbox;
 
         MovementState movementState = STILL;
-        double pitch = 0;
-        double yaw = 0;
+        Vector3 direction;
+        Orientation orientiation;
 
         void update(const Vector3& force, const double friction) {
             position += velocity;

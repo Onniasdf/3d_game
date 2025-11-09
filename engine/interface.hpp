@@ -2,6 +2,8 @@
 #define INC_3D_GAME_INTERFACE_HPP
 #include "world.hpp"
 #include "../datastructures/rgb_colour.hpp"
+#include "../datastructures/orientation.hpp"
+#include "entity.hpp"
 
 namespace engine {
     template <typename TWorld>
@@ -12,6 +14,7 @@ namespace engine {
         Entity& entity;
         const Physics& physics;
 
+    public:
         EntityInterface(TWorld& world, const RgbColour* colourMap, Entity& entity, const Physics& physics) : world(world), colourMap(colourMap), entity(entity), physics(physics) {}
 
         void jump() const {
@@ -20,10 +23,11 @@ namespace engine {
             }
         }
 
-        void rotate(const double pitch, const double yaw) const {
-            entity.pitch = pitch;
-            entity.yaw = yaw;
-            const Vector3 dir = Vector3::fromAngle(yaw, 0);
+        void rotate(Orientation orientationChange) const {
+            entity.orientiation.yaw += orientationChange.yaw;
+            entity.orientiation.pitch += orientationChange.pitch;
+            Orientation horizontalOrientation{entity.orientiation.yaw, 0};
+            const Vector3 dir = horizontalOrientation.getDirection();
             const double z = entity.velocity.z;
             entity.velocity = dir * entity.velocity.withZ(0).length();
             entity.velocity.z = z;
@@ -33,7 +37,7 @@ namespace engine {
         void setMoving(const MovementState state) const {
             if (state == entity.movementState) return;
             entity.movementState = state;
-            const Vector3 acceleration = Vector3::fromAngle(entity.yaw, entity.pitch) * physics.movementAcceleration;
+            const Vector3 acceleration = entity.orientiation.getDirection() * physics.movementAcceleration;
             if (state == MOVING) {
                 entity.acceleration = acceleration;
             } else {
@@ -41,7 +45,7 @@ namespace engine {
             }
         }
 
-        RgbColour getColor(const double pitchOffset, const double yawOffset) {
+        RgbColour getColor(Orientation offset) {
             const double pitch = entity.pitch + pitchOffset;
             const double yaw = entity.yaw + yawOffset;
             Vector3 dir = Vector3::fromAngle(yaw, pitch);
@@ -59,14 +63,18 @@ namespace engine {
         std::vector<Entity>& entities;
         const Physics& physics;
 
-        WorldInterface(TWorld& world, const RgbColour* colourMap, bool& running, std::vector<Entity>& entities, const Physics& physics) : world(world), colourMap(colourMap), running(running), entities(entities), physics(physics) {}
 
     public:
+        WorldInterface(TWorld& world, const RgbColour* colourMap, bool& running, std::vector<Entity>& entities, const Physics& physics) : world(world), colourMap(colourMap), running(running), entities(entities), physics(physics) {}
+        
         void end() const {
             running = false;
         }
 
-        [[nodiscard]] size_t addEntity(const Entity& entity) const {
+        [[nodiscard]] size_t addEntity(Vector3 position, Vector3 hitbox) const {
+            Entity entity{};
+            entity.position = position;
+            entity.hitbox = hitbox;
             const size_t id = entities.size();
             entities.push_back(entity);
             return id;
