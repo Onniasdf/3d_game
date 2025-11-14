@@ -1,0 +1,8 @@
+//
+// Created by Harri on 11/11/2025.
+//
+
+#ifndef INC_3D_GAME_RAYTRACING_HPP
+#define INC_3D_GAME_RAYTRACING_HPP
+
+#endif //INC_3D_GAME_RAYTRACING_HPP

@@ -12,16 +12,16 @@ namespace game {
 
     public:
 
-        Renderer() {}
+        Renderer() = default;
 
-        void write(RgbColour colour) {
-            uint32_t code = colour.toAnsiCode();
+        void write(const RgbColour colour) {
+            const uint32_t code = colour.toAnsiCode();
             if (currentColour == code) {
                 buffer << "#";
                 return;
             }
             currentColour = code;
-            buffer << "\033[38;5;" << colour.toAnsiCode() << "m#";
+            buffer << "\033[38;5;" << code << "m@";
         }
 
         void writeLine() {
@@ -34,6 +34,7 @@ namespace game {
 
         void flush() {
             std::cout << buffer.str();
+            buffer.clear();
         }
     };
 }
