@@ -1,8 +1,14 @@
-//
-// Created by Harri on 11/11/2025.
-//
-
 #ifndef INC_3D_GAME_RAYTRACING_HPP
 #define INC_3D_GAME_RAYTRACING_HPP
 
-#endif //INC_3D_GAME_RAYTRACING_HPP
+#include "block_world.hpp"
+#include "../datastructures/vector3.hpp"
+
+struct RayEnd {
+	Vector3 hit;
+	Vector3 lastBlock;
+};
+
+RayEnd castRay(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction);
+
+#endif

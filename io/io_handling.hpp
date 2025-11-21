@@ -5,42 +5,39 @@
 #include "rendering.hpp"
 #include "../datastructures/orientation.hpp"
 #include "../engine/interface.hpp"
-#include "../engine/world.hpp"
 #include "../datastructures/vector3.hpp"
+#include "../game/player.hpp"
+#include "texture.hpp"
+#include <vector>
+#include <cstdint>
+#include <variant>
+
 
 namespace io {
-    struct Direction {
-        bool up = false;
-        bool down = false;
-        bool left = false;
-        bool right = false;
-
-        bool operator==(const Direction& other) const {
-            return up == other.up && down == other.down && left == other.left && right == other.right;
-        }
-    };
-
     class IoHandler {
         Renderer renderer{};
         Orientation orientationLimit;
         Orientation orientationDelta;
         InputListener input;
         std::vector<std::variant<KeyboardEvent, MouseButtons, Point>> inputBuffer;
-        Direction direction{};
-        uint32_t currentBlock = 0;
+        Point mousePointer{};
+        double sensitivity;
+        Texture* textures;
+        
+        game::Player player{};
 
         
     public:
-        IoHandler(const Orientation fieldOfView, const Point screenSize, InputListener input) :
+        IoHandler(const Orientation fieldOfView, const Point screenSize, double mouseSensivity, InputListener input, Texture* textures) :
+        sensitivity(mouseSensivity),
         orientationLimit({fieldOfView.yaw / 2, fieldOfView.pitch / 2}),
         orientationDelta({fieldOfView.yaw / screenSize.x, fieldOfView.pitch / screenSize.y}),
-        input(input) {}
+        input(input),
+        textures(textures) {}
 
-        template <engine::Interactable TWorld>
-        void writeOutput(engine::EntityInterface<TWorld>& player);
+        void writeOutput(engine::EntityInterface& player);
 
-        template <engine::Interactable TWorld>
-        void readInput(engine::EntityInterface<TWorld>& player);
+        void readInput(engine::EntityInterface& player);
     };
 }
 

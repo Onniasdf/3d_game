@@ -33,12 +33,12 @@ namespace engine {
         Vector3 hitbox;
 
         MovementState movementState = STILL;
-        Vector3 direction;
+        Vector2 direction;
         Orientation orientation;
 
-        void update(const Vector3& force, const double friction) {
+        void update(const double friction) {
             position += velocity;
-            velocity += acceleration + force;
+            velocity += acceleration;
             acceleration *= 1 - friction;
         }
     };

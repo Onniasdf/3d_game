@@ -2,6 +2,7 @@
 #define ORIENTATION_HPP
 
 #include "vector3.hpp"
+#include <cmath>
 
 struct Orientation {
     double yaw = 0, pitch = 0;
@@ -9,12 +10,18 @@ struct Orientation {
     Orientation(double yaw, double pitch) : yaw(yaw), pitch(pitch) {}
     Orientation() = default;
 
-    Vector3 getDirection() {
-        Vector3 dir;
-        dir.x = std::cos(pitch) * std::sin(yaw);
-        dir.y = std::sin(pitch);
-        dir.z = std::cos(pitch) * std::cos(yaw);
+    Vector3 getDirection() const {
+        Vector3 dir{ std::cos(pitch) * std::sin(yaw), std::sin(pitch), std::cos(pitch) * std::cos(yaw) };
         return dir;
+    }
+
+    Orientation operator+(const Orientation& other) const {
+        return {yaw + other.yaw, pitch + other.pitch};
+    }
+
+    void operator+=(const Orientation& other) {
+        yaw += other.yaw;
+        pitch += other.pitch;
     }
 };
 

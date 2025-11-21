@@ -4,8 +4,9 @@
 #include <sstream>
 #include <iostream>
 #include "../datastructures/rgb_colour.hpp"
+#include <cstdint>
 
-namespace game {
+namespace io {
     class Renderer {
         std::ostringstream buffer{};
         uint32_t currentColour = 0;
@@ -17,7 +18,7 @@ namespace game {
         void write(const RgbColour colour) {
             const uint32_t code = colour.toAnsiCode();
             if (currentColour == code) {
-                buffer << "#";
+                buffer << "@";
                 return;
             }
             currentColour = code;
@@ -25,16 +26,19 @@ namespace game {
         }
 
         void writeLine() {
-            buffer << "\n";
+            buffer << std::endl;
         }
 
         void startFrame() {
-            buffer << "\033[H";
+            buffer << "\033[H\033[J";
         }
 
         void flush() {
-            std::cout << buffer.str();
-            buffer.clear();
+            buffer << "\033[0m";
+            currentColour = 0;
+            std::cout << buffer.str() << std::flush;
+            buffer.str("");
+			buffer.clear();
         }
     };
 }

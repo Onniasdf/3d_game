@@ -6,8 +6,8 @@
 #include <vector>
 
 
-namespace game {
-    enum MouseButtons {
+namespace io {
+    enum MouseButtons : uint8_t {
         LEFT,
         RIGHT = 1 << 1,
         MIDDLE = 1 << 2,
@@ -26,44 +26,14 @@ namespace game {
             static_cast<int>(a) & static_cast<int>(b)
         );
     }
-
-    inline MouseButtons operator^(MouseButtons a, MouseButtons b) {
-        return static_cast<MouseButtons>(
-            static_cast<int>(a) ^ static_cast<int>(b)
-        );
-    }
-
-    inline MouseButtons operator~(MouseButtons a) {
-        return static_cast<MouseButtons>(
-            ~static_cast<int>(a)
-        );
-    }
-
     inline MouseButtons& operator|=(MouseButtons& a, MouseButtons b) {
         a = a | b;
         return a;
     }
 
-    inline MouseButtons& operator&=(MouseButtons& a, MouseButtons b) {
-        a = a & b;
-        return a;
+    inline bool hasFlag(const MouseButtons flags, const MouseButtons flag) {
+        return static_cast<uint8_t>(flags & flag) != 0;
     }
-
-    inline MouseButtons& operator^=(MouseButtons& a, MouseButtons b) {
-        a = a ^ b;
-        return a;
-    }
-
-    inline bool hasFlag(MouseButtons flags, MouseButtons flag) {
-        return static_cast<int>(flags & flag) != 0;
-    }
-
-    struct MouseEvent {
-        MouseButtons buttons;
-        Point position;
-
-        MouseEvent(MouseButtons buttons, Point p) : buttons(buttons), position(p) {}
-    };
 
     struct KeyboardEvent {
         char key;
@@ -80,7 +50,8 @@ namespace game {
         #endif
     public:
         static InputListener create();
-        void read(std::vector<std::variant<KeyboardEvent, MouseEvent>>& buffer) const;
+        void read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point>>& buffer) const;
+        ~InputListener();
     };
 }
 

@@ -1,31 +1,54 @@
 #include "engine/engine.hpp"
 #include "engine/block_world.hpp"
-#include <memory>
+#include "io/io_handling.hpp"
+#include "engine/interface.hpp"
 #include <chrono>
-#include <sstream>
-#include "game/rendering.hpp"
 #include <optional>
+#include <numbers>
+#include "io/input.hpp"
+#include "engine/physics.hpp"
+#include "datastructures/rgb_colour.hpp"
+#include "io/texture.hpp"
+#include <utility>
+
 
 int main() {
-    uint32_t screenWitdh = 40, screenHeight = 20;
-    double yaw = 90, pitch = 180;
-    double yawDelta = yaw / screenWitdh, pitchDelta = pitch / screenHeight;
-    double yawLimit = yaw / 2, pitchLimit = pitch / 2;
-    size_t entityIndex = 0;
+    io::Texture colours[10] = {
+        {{0, 0, 1}},       // black
+        {{255, 0, 0}},     // red
+        {{0, 255, 0}},     // green
+        {{0, 0, 255}},     // blue
+        {{255, 255, 0}},   // yellow
+        {{255, 0, 255}},   // magenta
+        {{0, 255, 255}},   // cyan
+        {{128, 128, 128}}, // gray
+        {{255, 128, 0}},   // orange
+        {{128, 0, 128}}    // purple
+    };
     engine::LimitedBlockWorld world{50,50,50};
-    engine::Physics physics = engine::Physics::calculateFromMetersPerSecond(20, 32, 4);
-    engine::GameEngine<engine::LimitedBlockWorld> engine{world, std::chrono::milliseconds(1000) / 20, physics, nullptr};
-    game::Renderer renderer{};
-    engine.onTick([&](engine::WorldInterface<engine::LimitedBlockWorld>& interface) {
-        renderer.startFrame();
-        std::optional<engine::EntityInterface<engine::LimitedBlockWorld>> entity = interface.getEntity(entityIndex);
+    world.set({ 0,4,1 }, 4);
+    world.set({ 0,4,2 }, 5);
+    world.set({ 0,5,2 }, 6);
+    world.set({ -4,5,2 }, 8);
+    world.set({ 2,5,-30 }, 8);
+    for (int i = -50; i < 50; i++) {
+        for (int j = -50; j < 50; j++) {
+            world.set({ (double)i, (double)j, 0 }, 2);
+        }
+    }
+    engine::Physics physics = engine::Physics::calculateFromPerSecond(20, 3, 2, 1.3);
+    engine::GameEngine game{std::move(world), std::chrono::milliseconds(1000) / 20, physics};
+    io::InputListener listener = io::InputListener::create();
+    io::IoHandler ioHandler{{std::numbers::pi / 2, std::numbers::pi}, {100, 30}, 0.001, listener, colours};
+    size_t entityIndex = 0;
+    game.onTick([&](engine::WorldInterface& interface) {
+        std::optional<engine::EntityInterface> entity = interface.getEntity(entityIndex);
         if (!entity.has_value()) {
-            entityIndex = interface.addEntity({}, {1 / 3, 1 / 3, 1});
+            entityIndex = interface.addEntity({0, 0, 2}, {1. / 3, 1. / 3, 1});
+            return;
         }
-        for (double pitchOffset = -pitchLimit; pitchOffset < pitchLimit; pitchOffset += pitchDelta) {
-            for (double yawOffset = -yawLimit; yawOffset < yawLimit; yawOffset += yawDelta) {
-            }
-        }
+        ioHandler.readInput(entity.value());
+        ioHandler.writeOutput(entity.value());
     });
-    engine.run();
+    game.run();
 }

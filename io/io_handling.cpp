@@ -1,58 +1,71 @@
-#include "io.hpp"
+#include "io_handling.hpp"
 #include "../datastructures/rgb_colour.hpp"
+#include "../engine/interface.hpp"
+#include <cstdint>
+#include <variant>
 #include <cctype>
+#include "../datastructures/vector3.hpp"
+#include "../datastructures/orientation.hpp"
+#include "input.hpp"
+#include "../game/player.hpp"
 
-template<engine::Interactable TWorld>
-void io::IoHandler::writeOutput(engine::EntityInterface<TWorld>& player) {
+void io::IoHandler::writeOutput(engine::EntityInterface& entity) {
 	renderer.startFrame();
 	for (double pitchOffset = -orientationLimit.pitch; pitchOffset <= orientationLimit.pitch; pitchOffset += orientationDelta.pitch) {
 		for (double yawOffset = -orientationLimit.yaw; yawOffset <= orientationLimit.yaw; yawOffset += orientationDelta.yaw) {
-			const RgbColour colour = player.getColour({yawOffset, pitchOffset});
-			renderer.write(colour);
+			const uint16_t block = entity.findBlock({yawOffset, pitchOffset});
+			const Vector3 offset = entity.getPosition() - entity.getPosition().floor();
+			renderer.write(textures[block].getColour(offset));
 		}
 		renderer.writeLine();
 	}
 	renderer.flush();
 }
 
-template<engine::Interactable TWorld>
-void io::IoHandler::readInput(engine::EntityInterface<TWorld>& player) {
+void io::IoHandler::readInput(engine::EntityInterface& entity) {
 	input.read(inputBuffer);
 	for (auto& data : inputBuffer) {
 		if (data.index() == 0) {
 			auto [key, down] = std::get<0>(data);
-			Direction start = direction;
+			game::Direction start = player.getMovementDirection();
 			switch (static_cast<char>(std::tolower(static_cast<unsigned char>(key)))) {
 				case 'w':
-					direction.up = down;
+					player.move(game::UP, down);
 					break;
 				case 's':
-					direction.down = down;
+					player.move(game::DOWN, down);
 					break;
 				case 'd':
-					direction.right = down;
+					player.move(game::RIGHT, down);
 					break;
 				case 'a':
-					direction.left = down;
+					player.move(game::LEFT, down);
 					break;
 				case ' ':
-					player.jump();
+					entity.jump();
 					break;
 				default:
 					if (key >= '0' && key <= '9') {
-						const uint32_t block = key - '0';
-						currentBlock = block;
+						const uint32_t slot = key - '0';
+						player.selectItem(slot);
 					}
 			}
+			game::Direction direction = player.getMovementDirection();
 			if (start != direction) {
-				player.setMovement(direction);
+				entity.setMovementDirection({(double)direction.right - direction.left, (double)direction.up - direction.down});
 			}
 		}
 		else if (data.index() == 1) {
 			MouseButtons mouseButtons = std::get<1>(data);
 			if (hasFlag(mouseButtons, RIGHT)) {
-				player.placeBlock(currentBlock);
+				entity.placeBlock(player.getSelectedItem());
 			}
+		}
+		else if (data.index() == 2) {
+			Point point = std::get<2>(data);
+			Orientation rotation = { ((int32_t)point.x - mousePointer.x) * sensitivity, ((int32_t)point.y - mousePointer.y) * sensitivity };
+			mousePointer = point;
+			entity.rotate(rotation);
 		}
 	}
 	inputBuffer.clear();

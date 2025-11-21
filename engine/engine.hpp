@@ -4,35 +4,36 @@
 #include <chrono>
 #include <functional>
 #include <vector>
-#include <bits/this_thread_sleep.h>
-
-#include "entity.hpp"
+#include "physics.hpp"
 #include "interface.hpp"
-#include "world.hpp"
+#include <cstdint>
+#include "../datastructures/rgb_colour.hpp"
+#include "block_world.hpp"
+#include <utility>
 
 namespace engine {
 
-    template <engine::Interactable TWorld>
+
     class GameEngine {
-        TWorld world;
+        LimitedBlockWorld world;
         std::vector<Entity> entities;
-        std::vector<std::function<void(WorldInterface<TWorld>&)>> callbacks;
+        std::vector<std::function<void(WorldInterface&)>> callbacks;
         std::chrono::milliseconds updateDelay;
         Physics physics;
-        RgbColour* colourMap;
         bool running = true;
         uint64_t tick = 0;
 
         void update();
     public:
-        GameEngine(TWorld world, const std::chrono::milliseconds updateDelay, const Physics& physics, RgbColour* colourMap) : world(world), updateDelay(updateDelay), physics(physics), colourMap(colourMap) {}
+        GameEngine(LimitedBlockWorld world, const std::chrono::milliseconds updateDelay, const Physics& physics) : world(std::move(world)), updateDelay(updateDelay), physics(physics) {}
 
-        void onTick(const std::function<void(WorldInterface<TWorld>&)>& callback) {
+        void onTick(const std::function<void(WorldInterface&)>& callback) {
             callbacks.push_back(callback);
         }
 
         void run();
     };
+
 }
 
 #endif

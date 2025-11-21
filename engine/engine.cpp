@@ -1,17 +1,23 @@
 #include "engine.hpp"
-#include <cmath>
+#include <thread>
+#include <cstdint>
+#include "../datastructures/vector3.hpp"
+#include <optional>
+#include "interface.hpp"
+#include <chrono>
+#include <algorithm>
 
-template <engine::Interactable TWorld>
-void engine::GameEngine<TWorld>::update() {
+void engine::GameEngine::update() {
     for (auto& e : entities) {
         Vector3 force{};
+        e.velocity.z -= physics.gravity;
         const Vector3 points[4] = {{e.hitbox.x, e.hitbox.y, 0}, {-e.hitbox.x, -e.hitbox.y, 0}, {-e.hitbox.x, e.hitbox.y, 0}, {e.hitbox.x, -e.hitbox.y, 0}};
-        for (int32_t i = -e.hitbox.z; i <= e.hitbox.z + 1 ; i++) {
-            const double hitboxPos = std::max(static_cast<double>(i), e.hitbox.z);
-            for (const auto & offset : points) {
+        for (double i = -e.hitbox.z; i <= e.hitbox.z + 1 ; i++) {
+            const double hitboxPos = std::max(i, e.hitbox.z);
+            for (const auto& offset : points) {
                 Vector3 point = e.position + offset;
                 point.z += hitboxPos;
-                if (std::optional<uint64_t> block = world.get(point); !block.has_value()) continue;
+                if (!world.get(point).has_value()) continue;
                 const Vector3 difference = offset.withZ(hitboxPos).abs();
                 if (difference.z <= e.hitbox.z) {
                     force.z = -e.velocity.z;
@@ -23,19 +29,18 @@ void engine::GameEngine<TWorld>::update() {
                 break;
             }
         }
-        force.z -= physics.gravity;
-        e.update(force, physics.friction);
+        e.velocity += force;
+        e.velocity = e.velocity.limit({ 1,1,1 });
+        e.update(physics.friction);
     }
 }
 
 
-
-template <engine::Interactable TWorld>
-void engine::GameEngine<TWorld>::run() {
+void engine::GameEngine::run() {
     std::chrono::time_point<std::chrono::steady_clock> tickTime = std::chrono::steady_clock::now();
     while (running) {
         update();
-        WorldInterface<TWorld> interface {&world, colourMap, &running, &entities, &physics};
+        WorldInterface interface {world, running, entities, physics};
         for (auto& c : callbacks) {
             c(interface);
         }

@@ -4,23 +4,35 @@
 #include <optional>
 
 #include "../datastructures/vector3.hpp"
+#include <memory>
 
 namespace engine {
+    struct Cube {
+		size_t x, y, z;
+    };
+
     class LimitedBlockWorld {
-        int16_t* blocks;
-        size_t x, y, z;
+        std::unique_ptr<int16_t[]> blocks;
+        Cube quadrantSize;
+        Cube mapSize;
 
         [[nodiscard]] int16_t* getBlock(const Vector3& pos) const {
-            return &blocks[(static_cast<size_t>(pos.z) + z) * z + (static_cast<size_t>(pos.y) + y) * y + (static_cast<size_t>(pos.x) + x) * x];
+            return &blocks[(static_cast<intptr_t>(pos.z) + quadrantSize.z) * mapSize.y * mapSize.x + (static_cast<intptr_t>(pos.y) + quadrantSize.y) * mapSize.x + static_cast<intptr_t>(pos.x) + quadrantSize.x];
         }
 
         [[nodiscard]] bool isInBounds(Vector3 pos) const {
             const Vector3 absPos = pos.abs();
-            return absPos.x < x && absPos.y < y && absPos.z < z;
+            return absPos.x < quadrantSize.x && absPos.y < quadrantSize.y && absPos.z < quadrantSize.z;
         }
     public:
-        LimitedBlockWorld(size_t x, size_t y, size_t z) : blocks(new int16_t[z * 2 * y * 2 * x * 2]), x(x), y(y), z(z) {}
-        std::optional<uint16_t> get(const Vector3& pos) {
+        LimitedBlockWorld(size_t x, size_t y, size_t z) : quadrantSize({ x, y, z }), mapSize(x * 2, y * 2, z * 2) {
+            size_t size = mapSize.z * mapSize.y * mapSize.x;
+            blocks = std::make_unique<int16_t[]>(size);
+            for (size_t i = 0; i < size; i++) {
+                blocks[i] = -1;
+            }
+        }
+        std::optional<uint16_t> get(const Vector3& pos) const {
             if (!isInBounds(pos)) {
                 return {0};
             }
