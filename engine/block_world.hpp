@@ -1,5 +1,4 @@
-#ifndef INC_3D_GAME_BLOCK_WORLD_HPP
-#define INC_3D_GAME_BLOCK_WORLD_HPP
+#pragma once
 #include <cstdint>
 #include <optional>
 
@@ -52,5 +51,3 @@ namespace engine {
         }
     };
 }
-
-#endif

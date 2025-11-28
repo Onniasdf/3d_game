@@ -1,5 +1,4 @@
 #include "io_handling.hpp"
-#include "../datastructures/rgb_colour.hpp"
 #include "../engine/interface.hpp"
 #include <cstdint>
 #include <variant>
@@ -11,7 +10,7 @@
 
 void io::IoHandler::writeOutput(engine::EntityInterface& entity) {
 	renderer.startFrame();
-	for (double pitchOffset = -orientationLimit.pitch; pitchOffset <= orientationLimit.pitch; pitchOffset += orientationDelta.pitch) {
+	for (double pitchOffset = orientationLimit.pitch; pitchOffset >= -orientationLimit.pitch; pitchOffset -= orientationDelta.pitch) {
 		for (double yawOffset = -orientationLimit.yaw; yawOffset <= orientationLimit.yaw; yawOffset += orientationDelta.yaw) {
 			const uint16_t block = entity.findBlock({yawOffset, pitchOffset});
 			const Vector3 offset = entity.getPosition() - entity.getPosition().floor();
@@ -63,7 +62,7 @@ void io::IoHandler::readInput(engine::EntityInterface& entity) {
 		}
 		else if (data.index() == 2) {
 			Point point = std::get<2>(data);
-			Orientation rotation = { ((int32_t)point.x - mousePointer.x) * sensitivity, ((int32_t)point.y - mousePointer.y) * sensitivity };
+			Orientation rotation(((int32_t)point.x - mousePointer.x) * sensitivity, ((int32_t)point.y - mousePointer.y) * sensitivity);
 			mousePointer = point;
 			entity.rotate(rotation);
 		}

@@ -1,10 +1,11 @@
-#ifndef RENDERING_HPP
-#define RENDERING_HPP
+#pragma once
 
 #include <sstream>
 #include <iostream>
 #include "../datastructures/rgb_colour.hpp"
 #include <cstdint>
+#include "output.hpp"
+#include <string>
 
 namespace io {
     class Renderer {
@@ -36,11 +37,11 @@ namespace io {
         void flush() {
             buffer << "\033[0m";
             currentColour = 0;
-            std::cout << buffer.str() << std::flush;
+			const std::string& str = buffer.str();
+			write_to_output(reinterpret_cast<const uint8_t*>(str.c_str()), str.size());
             buffer.str("");
 			buffer.clear();
         }
     };
 }
 
-#endif

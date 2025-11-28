@@ -1,5 +1,4 @@
-#ifndef INC_3D_GAME_RAYTRACING_HPP
-#define INC_3D_GAME_RAYTRACING_HPP
+#pragma once
 
 #include "block_world.hpp"
 #include "../datastructures/vector3.hpp"
@@ -11,4 +10,3 @@ struct RayEnd {
 
 RayEnd castRay(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction);
 
-#endif

@@ -19,6 +19,7 @@ void engine::EntityInterface::jump() {
 void engine::EntityInterface::rotate(const Orientation orientationChange) {
     entity.orientation += orientationChange;
     entity.orientation.pitch = std::clamp(entity.orientation.pitch, -1.55334303, 1.55334303);
+	entity.orientation.yaw = std::fmod(entity.orientation.yaw, std::numbers::pi * 2);
     const Vector2 dir = {std::cos(entity.orientation.yaw), std::sin(entity.orientation.yaw)};
     entity.direction = dir;
     (dir * entity.velocity.withZ(0).length()).combineWith(entity.velocity);
@@ -50,14 +51,15 @@ void engine::EntityInterface::setMovementDirection(const Vector2& directionDelta
 
 
 void engine::EntityInterface::placeBlock(uint16_t id) {
-    RayEnd end = castRay(world, entity.position.withZ(entity.position.z + entity.hitbox.z * 2), entity.direction);
+    RayEnd end = castRay(world, entity.position, entity.direction);
     world.set(end.lastBlock, id);
 }
 
 
 uint16_t engine::EntityInterface::findBlock(const Orientation offset) {
-    Vector3 dir = (entity.orientation + offset).getDirection();
-    RayEnd end = castRay(world, entity.position.withZ(entity.position.z + entity.hitbox.z * 2), dir);
+	const Orientation angle = entity.orientation + offset;
+    Vector3 dir = angle.getDirection();
+    RayEnd end = castRay(world, entity.position.withZ(entity.position.z + entity.hitbox.z), dir);
     uint16_t block = world.get(end.hit).value();
     return block;
 }

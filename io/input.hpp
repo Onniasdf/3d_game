@@ -1,5 +1,4 @@
-#ifndef INPUT_HPP
-#define INPUT_HPP
+#pragma once
 #include <optional>
 #include <variant>
 #include "../datastructures/vector3.hpp"
@@ -54,5 +53,3 @@ namespace io {
         ~InputListener();
     };
 }
-
-#endif

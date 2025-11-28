@@ -1,5 +1,4 @@
-#ifndef INC_3D_GAME_INTERFACE_HPP
-#define INC_3D_GAME_INTERFACE_HPP
+#pragma once
 #include "../datastructures/rgb_colour.hpp"
 #include "../datastructures/orientation.hpp"
 #include "physics.hpp"
@@ -51,5 +50,3 @@ namespace engine {
         [[nodiscard]] std::optional<EntityInterface> getEntity(size_t id);
     };
 }
-
-#endif

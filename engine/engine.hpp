@@ -1,5 +1,4 @@
-#ifndef INC_3D_GAME_ENGINE_HPP
-#define INC_3D_GAME_ENGINE_HPP
+#pragma once
 
 #include <chrono>
 #include <functional>
@@ -35,5 +34,3 @@ namespace engine {
     };
 
 }
-
-#endif

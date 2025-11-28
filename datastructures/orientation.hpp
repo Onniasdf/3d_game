@@ -1,5 +1,4 @@
-#ifndef ORIENTATION_HPP
-#define ORIENTATION_HPP
+#pragma once
 
 #include "vector3.hpp"
 #include <cmath>
@@ -11,7 +10,7 @@ struct Orientation {
     Orientation() = default;
 
     Vector3 getDirection() const {
-        Vector3 dir{ std::cos(pitch) * std::sin(yaw), std::sin(pitch), std::cos(pitch) * std::cos(yaw) };
+        Vector3 dir{std::cos(pitch) * std::sin(yaw),std::cos(pitch) * std::cos(yaw),std::sin(pitch)};
         return dir;
     }
 
@@ -24,5 +23,3 @@ struct Orientation {
         pitch += other.pitch;
     }
 };
-
-#endif

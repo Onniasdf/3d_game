@@ -1,5 +1,4 @@
-#ifndef INC_3D_GAME_VECTOR3_HPP
-#define INC_3D_GAME_VECTOR3_HPP
+#pragma once
 #define NOMINMAX
 
 #include <cmath>
@@ -50,9 +49,10 @@ struct Vector3 {
         z -= other.z;
     }
 
-    Vector3 limit(const Vector3& other) const {
-        return { (std::min)(x, other.x), (std::min)(y, other.y), (std::min)(z, other.z) };
-    }
+    Vector3 clamp(double min, double max) const {
+        return {std::clamp(x, min, max), std::clamp(y, min, max), std::clamp(z, min, max)};
+	}
+
 
     void operator*=(const double scalar) {
         x *= scalar;
@@ -221,5 +221,3 @@ struct Point {
          return {x - other.x, y - other.y};
      }
 };
-
-#endif

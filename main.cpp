@@ -26,11 +26,6 @@ int main() {
         {{128, 0, 128}}    // purple
     };
     engine::LimitedBlockWorld world{50,50,50};
-    world.set({ 0,4,1 }, 4);
-    world.set({ 0,4,2 }, 5);
-    world.set({ 0,5,2 }, 6);
-    world.set({ -4,5,2 }, 8);
-    world.set({ 2,5,-30 }, 8);
     for (int i = -50; i < 50; i++) {
         for (int j = -50; j < 50; j++) {
             world.set({ (double)i, (double)j, 0 }, 2);

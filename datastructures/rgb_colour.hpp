@@ -1,5 +1,4 @@
-#ifndef INC_3D_GAME_RGBCOLOUR_HPP
-#define INC_3D_GAME_RGBCOLOUR_HPP
+#pragma once
 #include <cstdint>
 
 struct RgbColour {
@@ -17,7 +16,3 @@ struct RgbColour {
         return 16 + 36 * ri + 6 * gi + bi;
     }
 };
-
-
-
-#endif

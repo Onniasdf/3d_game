@@ -1,5 +1,4 @@
-#ifndef GAME_HPP
-#define GAME_HPP
+#pragma once
 
 #include "input.hpp"
 #include "rendering.hpp"
@@ -11,7 +10,6 @@
 #include <vector>
 #include <cstdint>
 #include <variant>
-
 
 namespace io {
     class IoHandler {
@@ -40,5 +38,3 @@ namespace io {
         void readInput(engine::EntityInterface& player);
     };
 }
-
-#endif

@@ -1,8 +1,8 @@
-#ifndef INC_3D_GAME_ENTITY_HPP
-#define INC_3D_GAME_ENTITY_HPP
+#pragma once
 #include "../datastructures/vector3.hpp"
 #include "../datastructures/orientation.hpp"
 #include <cmath>
+#include <cstdint>
 
 namespace engine {
     struct Physics {
@@ -21,18 +21,12 @@ namespace engine {
         }
     };
 
-    enum MovementState {
-        STILL,
-        MOVING,
-    };
-
     struct Entity {
         Vector3 position;
         Vector3 velocity;
         Vector3 acceleration;
         Vector3 hitbox;
 
-        MovementState movementState = STILL;
         Vector2 direction;
         Orientation orientation;
 
@@ -43,5 +37,3 @@ namespace engine {
         }
     };
 }
-
-#endif
