@@ -27,13 +27,18 @@ namespace engine {
         Vector3 acceleration;
         Vector3 hitbox;
 
-        Vector2 direction;
+		double movementDirection;
         Orientation orientation;
 
         void update(const double friction) {
             position += velocity;
             velocity += acceleration;
             acceleration *= 1 - friction;
+        }
+
+        Vector2 getDirection() const {
+            const double dir = orientation.yaw + movementDirection;
+            return {std::sin(dir), std::cos(dir)};
         }
     };
 }

@@ -6,7 +6,6 @@
 #include "../engine/interface.hpp"
 #include "../datastructures/vector3.hpp"
 #include "../game/player.hpp"
-#include "texture.hpp"
 #include <vector>
 #include <cstdint>
 #include <variant>
@@ -17,24 +16,22 @@ namespace io {
         Orientation orientationLimit;
         Orientation orientationDelta;
         InputListener input;
-        std::vector<std::variant<KeyboardEvent, MouseButtons, Point>> inputBuffer;
+        std::vector<std::variant<KeyboardEvent, MouseButtons, Point, SpecialKey>> inputBuffer;
         Point mousePointer{};
         double sensitivity;
-        Texture* textures;
         
         game::Player player{};
 
         
     public:
-        IoHandler(const Orientation fieldOfView, const Point screenSize, double mouseSensivity, InputListener input, Texture* textures) :
+        IoHandler(const Orientation fieldOfView, const Point screenSize, double mouseSensivity, InputListener input) :
         sensitivity(mouseSensivity),
         orientationLimit({fieldOfView.yaw / 2, fieldOfView.pitch / 2}),
         orientationDelta({fieldOfView.yaw / screenSize.x, fieldOfView.pitch / screenSize.y}),
-        input(input),
-        textures(textures) {}
+        input(input) {}
 
         void writeOutput(engine::EntityInterface& player);
 
-        void readInput(engine::EntityInterface& player);
+        void readInput(engine::EntityInterface& player, bool& quit);
     };
 }

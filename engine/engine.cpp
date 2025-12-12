@@ -11,17 +11,20 @@ void engine::GameEngine::update() {
     for (auto& e : entities) {
         Vector3 force{};
         e.velocity.z -= physics.gravity;
-        const Vector3 points[4] = {{e.hitbox.x, e.hitbox.y, 0}, {-e.hitbox.x, -e.hitbox.y, 0}, {-e.hitbox.x, e.hitbox.y, 0}, {e.hitbox.x, -e.hitbox.y, 0}};
-        for (double i = -e.hitbox.z; i <= e.hitbox.z + 1 ; i++) {
+        const Vector2 points[4] = {{e.hitbox.x, e.hitbox.y}, {-e.hitbox.x, -e.hitbox.y}, {-e.hitbox.x, e.hitbox.y}, {e.hitbox.x, -e.hitbox.y}};
+        for (const Vector2& point : points) {
+            Vector3 pos = e.position + point;
+			pos.z -= e.hitbox.z;
+            if (!world.get(pos).has_value()) continue;
+			force.z = -e.velocity.z;
+        }
+        for (double i = 0; i <= e.hitbox.z + 1 ; i += 0.5) {
             const double hitboxPos = std::min(i, e.hitbox.z);
-            for (const auto& offset : points) {
-                Vector3 point = e.position + offset;
-                point.z += hitboxPos;
-                if (!world.get(point).has_value()) continue;
-                const Vector3 difference = offset.withZ(hitboxPos).abs();
-                if (difference.z <= e.hitbox.z) {
-                    force.z = -e.velocity.z;
-                } else if (difference.y <= e.hitbox.y) {
+            for (Vector3 offset : points) {
+                offset.z = hitboxPos;
+                if (!world.get(e.position + offset).has_value()) continue;
+                const Vector3 difference = offset.abs();
+                if (difference.y <= e.hitbox.y) {
                     force.y = -e.velocity.y;
                 } else if (difference.x <= e.hitbox.x) {
                     force.x = -e.velocity.x;
@@ -30,7 +33,6 @@ void engine::GameEngine::update() {
             }
         }
         e.velocity += force;
-        e.velocity = e.velocity.clamp(-1,1);
         e.update(physics.friction);
     }
 }

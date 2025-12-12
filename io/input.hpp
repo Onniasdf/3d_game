@@ -3,6 +3,7 @@
 #include <variant>
 #include "../datastructures/vector3.hpp"
 #include <vector>
+#include <cstdint>
 
 
 namespace io {
@@ -39,6 +40,10 @@ namespace io {
         bool down;
     };
 
+    enum SpecialKey {
+        ESCAPE
+    };
+
     class InputListener {
         #ifdef __linux__
         int mouseInput;
@@ -49,7 +54,7 @@ namespace io {
         #endif
     public:
         static InputListener create();
-        void read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point>>& buffer) const;
+        void read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point, SpecialKey>>& buffer) const;
         ~InputListener();
     };
 }

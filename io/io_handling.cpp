@@ -1,5 +1,6 @@
 #include "io_handling.hpp"
 #include "../engine/interface.hpp"
+#include "../game/textures.hpp"
 #include <cstdint>
 #include <variant>
 #include <cctype>
@@ -12,17 +13,17 @@ void io::IoHandler::writeOutput(engine::EntityInterface& entity) {
 	renderer.startFrame();
 	for (double pitchOffset = orientationLimit.pitch; pitchOffset >= -orientationLimit.pitch; pitchOffset -= orientationDelta.pitch) {
 		for (double yawOffset = -orientationLimit.yaw; yawOffset <= orientationLimit.yaw; yawOffset += orientationDelta.yaw) {
-			const uint16_t block = entity.findBlock({yawOffset, pitchOffset});
-			const Vector3 offset = entity.getPosition() - entity.getPosition().floor();
-			renderer.write(textures[block].getColour(offset));
+			const engine::BlockOffset block = entity.findBlock({yawOffset, pitchOffset});
+			renderer.write(game::resolveColour(static_cast<game::Block>(block.block), block.offset));
 		}
 		renderer.writeLine();
 	}
 	renderer.flush();
 }
 
-void io::IoHandler::readInput(engine::EntityInterface& entity) {
+void io::IoHandler::readInput(engine::EntityInterface& entity, bool& quit) {
 	input.read(inputBuffer);
+	quit = false;
 	for (auto& data : inputBuffer) {
 		if (data.index() == 0) {
 			auto [key, down] = std::get<0>(data);
@@ -51,7 +52,7 @@ void io::IoHandler::readInput(engine::EntityInterface& entity) {
 			}
 			game::Direction direction = player.getMovementDirection();
 			if (start != direction) {
-				entity.setMovementDirection({(double)direction.right - direction.left, (double)direction.up - direction.down});
+				entity.setMovementDirection({(double)direction.right - (double)direction.left, (double)direction.up - (double)direction.down});
 			}
 		}
 		else if (data.index() == 1) {
@@ -62,9 +63,16 @@ void io::IoHandler::readInput(engine::EntityInterface& entity) {
 		}
 		else if (data.index() == 2) {
 			Point point = std::get<2>(data);
-			Orientation rotation(((int32_t)point.x - mousePointer.x) * sensitivity, ((int32_t)point.y - mousePointer.y) * sensitivity);
+			Orientation rotation(((int32_t)point.x - (int32_t)mousePointer.x) * sensitivity, ((int32_t)point.y - (int32_t)mousePointer.y) * sensitivity);
 			mousePointer = point;
 			entity.rotate(rotation);
+		}
+		else if (data.index() == 3) {
+			SpecialKey specialKey = std::get<3>(data);
+			if (specialKey == ESCAPE) {
+				quit = true;
+
+			}
 		}
 	}
 	inputBuffer.clear();

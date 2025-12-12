@@ -9,6 +9,11 @@
 #include <optional>
 
 namespace engine {
+    struct BlockOffset {
+        uint16_t block;
+        Vector3 offset;
+    };
+
     class EntityInterface {
         LimitedBlockWorld& world;
         Entity& entity;
@@ -29,7 +34,7 @@ namespace engine {
 			return entity.position;
         }
 
-        uint16_t findBlock(Orientation offset);
+        BlockOffset findBlock(Orientation offset);
     };
 
 

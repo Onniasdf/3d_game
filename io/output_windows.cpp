@@ -1,6 +1,7 @@
 
 #ifdef _WIN32
 #include <cstdint>
+#define NOMINMAX
 #include <windows.h>
 #include <cstdarg>
 

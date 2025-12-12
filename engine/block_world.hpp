@@ -31,7 +31,7 @@ namespace engine {
                 blocks[i] = -1;
             }
         }
-        std::optional<uint16_t> get(const Vector3& pos) const {
+        [[nodiscard]] std::optional<uint16_t> get(const Vector3& pos) const {
             if (!isInBounds(pos)) {
                 return {0};
             }

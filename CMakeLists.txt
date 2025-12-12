@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(3d_game main.cpp
         engine/physics.hpp
-        datastructures/Vector3.hpp
+        datastructures/vector3.hpp
         datastructures/orientation.hpp
         datastructures/rgb_colour.hpp
         engine/block_world.hpp
@@ -22,5 +22,6 @@ add_executable(3d_game main.cpp
         engine/interface.cpp
         game/player.hpp
         game/player.cpp
+        game/textures.cpp
         io/texture.hpp
-  "game/player.cpp" "io/output_windows.cpp")
+  "game/player.cpp" "io/output_windows.cpp" "game/textures.cpp")
