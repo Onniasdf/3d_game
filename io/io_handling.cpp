@@ -57,7 +57,7 @@ void io::IoHandler::readInput(engine::EntityInterface& entity, bool& quit) {
 		}
 		else if (data.index() == 1) {
 			MouseButtons mouseButtons = std::get<1>(data);
-			if (hasFlag(mouseButtons, RIGHT)) {
+			if (mouseButtons.right) {
 				entity.placeBlock(player.getSelectedItem());
 			}
 		}

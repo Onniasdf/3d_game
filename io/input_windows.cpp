@@ -31,19 +31,19 @@ void io::InputListener::read(std::vector<std::variant<KeyboardEvent, MouseButton
 			MOUSE_EVENT_RECORD event = record.Event.MouseEvent;
 			MouseButtons buttons = {};
 			if (event.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
-				buttons |= LEFT;
+				buttons.left = true;
 			}
 			if (event.dwButtonState & RIGHTMOST_BUTTON_PRESSED) {
-				buttons |= RIGHT;
+				buttons.right = true;
 			}
 			if (event.dwButtonState & FROM_LEFT_2ND_BUTTON_PRESSED) {
-				buttons |= MIDDLE;
+				buttons.middle = true;
 			}
 			if (event.dwButtonState & FROM_LEFT_3RD_BUTTON_PRESSED) {
-				buttons |= EXTRA1;
+				buttons.extra1 = true;
 			}
 			if (event.dwButtonState & FROM_LEFT_4TH_BUTTON_PRESSED) {
-				buttons |= EXTRA2;
+				buttons.extra2 = true;
 			}
 			buffer.emplace_back(buttons);
 			auto [x, y] = event.dwMousePosition;

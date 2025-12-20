@@ -11,7 +11,7 @@ namespace engine {
         double movementAcceleration;
         double friction;
 
-        static Physics calculateFromPerSecond(const uint32_t ticks, const double gravity, double movementSpeed, const double jumpHeight) {
+        static Physics calculateFromPerSecond(const uint32_t ticks, const double gravity, const double movementSpeed, const double jumpHeight) {
             Physics physics{};
             physics.gravity = gravity / ticks;
             physics.jumpSpeed = std::sqrt(physics.gravity * jumpHeight);
