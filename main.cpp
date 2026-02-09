@@ -20,7 +20,7 @@ int main() {
         }
     }
     const int ticks = 20;
-    engine::Physics physics = engine::Physics::calculateFromPerSecond(ticks, 3, 3, 20);
+    engine::Environment physics = engine::Environment::calculateFromPerSecond(ticks, 3, 3, 20);
     engine::GameEngine game{std::move(world), std::chrono::milliseconds(1000) / ticks, physics};
     io::InputListener listener = io::InputListener::create();
     io::IoHandler ioHandler{{std::numbers::pi / 2, std::numbers::pi / 2}, {300, 50}, 0.1, listener};

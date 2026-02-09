@@ -15,16 +15,16 @@ namespace engine {
 
     class GameEngine {
         LimitedBlockWorld world;
-        std::vector<Entity> entities;
+        std::vector<EntityState> entities;
         std::vector<std::function<void(WorldInterface&)>> callbacks;
         std::chrono::milliseconds updateDelay;
-        Physics physics;
+        Environment physics;
         bool running = true;
         uint64_t tick = 0;
 
         void update();
     public:
-        GameEngine(LimitedBlockWorld world, const std::chrono::milliseconds updateDelay, const Physics& physics) : world(std::move(world)), updateDelay(updateDelay), physics(physics) {}
+        GameEngine(LimitedBlockWorld world, const std::chrono::milliseconds updateDelay, const Environment& physics) : world(std::move(world)), updateDelay(updateDelay), physics(physics) {}
 
         void onTick(const std::function<void(WorldInterface&)>& callback) {
             callbacks.push_back(callback);

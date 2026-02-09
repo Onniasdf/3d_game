@@ -2,11 +2,12 @@
 #include "../datastructures/rgb_colour.hpp"
 #include "../datastructures/orientation.hpp"
 #include "physics.hpp"
-#include <vector>
+#include "entity.hpp"
 #include "block_world.hpp"
 #include "../datastructures/vector3.hpp"
 #include <cstdint>
 #include <optional>
+#include <vector>
 
 namespace engine {
     struct BlockOffset {
@@ -17,10 +18,10 @@ namespace engine {
     class EntityInterface {
         LimitedBlockWorld& world;
         Entity& entity;
-        const Physics& physics;
+        const Environment& physics;
 
     public:
-        EntityInterface(LimitedBlockWorld& world, Entity& entity, const Physics& physics) : world(world), entity(entity), physics(physics) {}
+        EntityInterface(LimitedBlockWorld& world, Entity& entity, const Environment& physics) : world(world), entity(entity), physics(physics) {}
 
         void jump();
 

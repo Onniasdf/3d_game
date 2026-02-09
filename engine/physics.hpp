@@ -5,14 +5,14 @@
 #include <cstdint>
 
 namespace engine {
-    struct Physics {
+    struct Environment {
         double gravity;
         double jumpSpeed;
         double movementAcceleration;
         double friction;
 
-        static Physics calculateFromPerSecond(const uint32_t ticks, const double gravity, const double movementSpeed, const double jumpHeight) {
-            Physics physics{};
+        static Environment calculateFromPerSecond(const uint32_t ticks, const double gravity, const double movementSpeed, const double jumpHeight) {
+            Environment physics{};
             physics.gravity = gravity / ticks;
             physics.jumpSpeed = std::sqrt(physics.gravity * jumpHeight);
             physics.movementAcceleration = movementSpeed / ticks;
@@ -21,7 +21,7 @@ namespace engine {
         }
     };
 
-    struct Entity {
+    struct EntityState {
         Vector3 position;
         Vector3 velocity;
         Vector3 acceleration;

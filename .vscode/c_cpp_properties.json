@@ -6,7 +6,7 @@
                 "${default}"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc-12",
+            "compilerPath": "/usr/bin/clang++",
             "cppStandard": "c++23",
             "intelliSenseMode": "linux-clang-x64"
         }

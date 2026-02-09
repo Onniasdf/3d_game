@@ -1,5 +1,5 @@
 {
-    "C_Cpp.default.compilerPath": "/usr/bin/gcc-12",
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
     "files.associations": {
         "iosfwd": "cpp",
         "sstream": "cpp",
