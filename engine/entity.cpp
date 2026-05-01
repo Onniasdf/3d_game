@@ -22,7 +22,7 @@ void Entity::rotateMovement(const Vector2& direction) {
 
 void Entity::rotateView(const Orientation& direction) {
     state.orientation += orientationChange;
-    state.orientation.pitch = std::clamp(state.orientation.pitch, -1.55334303, 1.55334303);
+    state.orientation.pitch = std::clamp(state.orientation.pitch, -std::numbers::pi / 2, std::numbers::pi / 2);
 	state.orientation.yaw = std::fmod(state.orientation.yaw, std::numbers::pi * 2);
 	if (state.orientation.yaw < 0) {
         state.orientation.yaw += std::numbers::pi * 2;

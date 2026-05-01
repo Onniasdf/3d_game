@@ -12,6 +12,11 @@ namespace io {
         std::ostringstream buffer{};
         uint32_t currentColour = 0;
 
+        const std::string CLEAR_SCREEN = "\033[H\033[J";
+        const std::string RESET_COLOUR = "\033[0m";
+        const std::string START_COLOUR = "\033[38;5;";
+        const std::string END_COLOUR = "m@";
+
     public:
 
         Renderer() = default;
@@ -23,7 +28,7 @@ namespace io {
                 return;
             }
             currentColour = code;
-            buffer << "\033[38;5;" << code << "m@";
+            buffer << START_COLOUR << code << END_COLOUR;
         }
 
         void writeLine() {
@@ -31,11 +36,11 @@ namespace io {
         }
 
         void startFrame() {
-            buffer << "\033[H\033[J";
+            buffer << CLEAR_SCREEN;
         }
 
         void flush() {
-            buffer << "\033[0m";
+            buffer << RESET_COLOUR;
             currentColour = 0;
 			const std::string& str = buffer.str();
 			write_to_output(reinterpret_cast<const uint8_t*>(str.c_str()), str.size());

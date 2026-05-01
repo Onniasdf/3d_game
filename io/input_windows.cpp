@@ -10,10 +10,9 @@
 #include <algorithm>
 #include <cstdint>
 
-constexpr auto BUFFER_SIZE = 10;
 
 void io::InputListener::read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point, SpecialKey>>& buffer) const {
-	INPUT_RECORD records[BUFFER_SIZE];
+	INPUT_RECORD records[10];
 	DWORD count;
 	GetNumberOfConsoleInputEvents(handle, &count);
 	if (count == 0) return;

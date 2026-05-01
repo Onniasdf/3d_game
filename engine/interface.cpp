@@ -53,8 +53,6 @@ void engine::EntityInterface::placeBlock(uint16_t id) {
     world.set(end.lastBlock, id);
 }
 
-
-
 engine::BlockOffset engine::EntityInterface::findBlock(const Orientation offset) {
 	const Orientation angle = entity.orientation + offset;
     Vector3 dir = angle.getDirection();
