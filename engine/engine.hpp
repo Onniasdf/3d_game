@@ -5,8 +5,6 @@
 #include <vector>
 #include "physics.hpp"
 #include "interface.hpp"
-#include <cstdint>
-#include "../datastructures/rgb_colour.hpp"
 #include "block_world.hpp"
 #include <utility>
 
@@ -15,7 +13,7 @@ namespace engine {
 
     class GameEngine {
         LimitedBlockWorld world;
-        std::vector<EntityState> entities;
+        std::vector<EntityInformation> entities;
         std::vector<std::function<void(WorldInterface&)>> callbacks;
         std::chrono::milliseconds updateDelay;
         Environment physics;

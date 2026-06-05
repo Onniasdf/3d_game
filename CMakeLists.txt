@@ -23,5 +23,6 @@ add_executable(3d_game main.cpp
         game/player.hpp
         game/player.cpp
         game/textures.cpp
-        io/texture.hpp
-  "game/player.cpp" "io/output_windows.cpp" "game/textures.cpp")
+        engine/entity.cpp
+  "game/player.cpp" "io/output_windows.cpp" "game/textures.cpp"
+        engine/entity.cpp)

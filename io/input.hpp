@@ -1,9 +1,7 @@
 #pragma once
-#include <optional>
 #include <variant>
 #include "../datastructures/vector3.hpp"
 #include <vector>
-#include <cstdint>
 
 
 namespace io {

@@ -1,6 +1,5 @@
 #include "engine.hpp"
 #include <thread>
-#include <cstdint>
 #include "../datastructures/vector3.hpp"
 #include <optional>
 #include "interface.hpp"
@@ -8,32 +7,31 @@
 #include <algorithm>
 
 void engine::GameEngine::update() {
-    for (auto& e : entities) {
+    for (auto& [state, hitbox, _] : entities) {
         Vector3 force{};
-        e.velocity.z -= physics.gravity;
-        const Vector2 points[4] = {{e.hitbox.x, e.hitbox.y}, {-e.hitbox.x, -e.hitbox.y}, {-e.hitbox.x, e.hitbox.y}, {e.hitbox.x, -e.hitbox.y}};
+        state.velocity.z -= physics.gravity;
+        const Vector2 points[4] = {{hitbox.x, hitbox.y}, {-hitbox.x, -hitbox.y}, {-hitbox.x, hitbox.y}, {hitbox.x, -hitbox.y}};
         for (const Vector2& point : points) {
-            Vector3 pos = e.position + point;
-			pos.z -= e.hitbox.z;
+            Vector3 pos = state.position + point;
+			pos.z -= hitbox.z;
             if (!world.get(pos).has_value()) continue;
-			force.z = -e.velocity.z;
+			force.z = -state.velocity.z;
         }
-        for (double i = 0; i <= e.hitbox.z + 1 ; i += 0.5) {
-            const double hitboxPos = std::min(i, e.hitbox.z);
+        for (double i = 0; i <= hitbox.z + 1 ; i += 0.5) {
+            const double hitboxPos = std::min(i, hitbox.z);
             for (Vector3 offset : points) {
                 offset.z = hitboxPos;
-                if (!world.get(e.position + offset).has_value()) continue;
-                const Vector3 difference = offset.abs();
-                if (difference.y <= e.hitbox.y) {
-                    force.y = -e.velocity.y;
-                } else if (difference.x <= e.hitbox.x) {
-                    force.x = -e.velocity.x;
+                if (!world.get(state.position + offset).has_value()) continue;
+                if (const Vector3 difference = offset.abs(); difference.y <= hitbox.y) {
+                    force.y = -state.velocity.y;
+                } else if (difference.x <= hitbox.x) {
+                    force.x = -state.velocity.x;
                 }
                 break;
             }
         }
-        e.velocity += force;
-        e.update(physics.friction);
+        state.velocity += force;
+        state.update(physics.friction);
     }
 }
 

@@ -1,40 +1,46 @@
 #include "entity.hpp"
 
-Vector2 getDirection(const EntityState& state) const {
+Vector2 getDirection(const engine::EntityState& state) {
     const double dir = state.orientation.yaw + state.movementDirection;
     return {std::sin(dir), std::cos(dir)};
 }
 
-void Entity::updateMovementDirection() {
-    const Vector2 direction = getDirection(state);
-    const double speed = state.velocity.withZ(0).length();
-    if (speed == 0) {
-		entity.acceleration = direction * physics.movementAcceleration;
+void engine::Entity::updateMovementDirection() const {
+    const Vector2 direction = getDirection(information.state);
+    if (information.state.velocity.withZ(0).length() == 0) {
+		information.state.acceleration = direction * information.acceleration;
 		return;
     }
-    state.velocity = direction * entity.velocity.withZ(0).length();
-    state.acceleration = direction * entity.acceleration.withZ(0).length();
+    information.state.velocity = direction * information.state.velocity.withZ(0).length();
+    information.state.acceleration = direction * information.state.acceleration.withZ(0).length();
 }
 
-void Entity::rotateMovement(const Vector2& direction) {
-    state.movementDirection = std::atan2(directionDelta.x, directionDelta.y);
+void engine::Entity::rotateMovement(const Vector2& direction) const {
+    information.state.movementDirection = std::atan2(direction.x, direction.y);
 }
 
-void Entity::rotateView(const Orientation& direction) {
-    state.orientation += orientationChange;
-    state.orientation.pitch = std::clamp(state.orientation.pitch, -std::numbers::pi / 2, std::numbers::pi / 2);
-	state.orientation.yaw = std::fmod(state.orientation.yaw, std::numbers::pi * 2);
-	if (state.orientation.yaw < 0) {
-        state.orientation.yaw += std::numbers::pi * 2;
+void engine::Entity::rotateView(const Orientation& direction) const {
+    information.state.orientation += direction;
+    information.state.orientation.pitch = std::clamp(information.state.orientation.pitch, -std::numbers::pi / 2, std::numbers::pi / 2);
+	information.state.orientation.yaw = std::fmod(information.state.orientation.yaw, std::numbers::pi * 2);
+	if (information.state.orientation.yaw < 0) {
+        information.state.orientation.yaw += std::numbers::pi * 2;
     }
 }
 
-Ray Entity::getView(const Orientation& offset) {
-	return {state.position.withZ(entity.position.z + entity.hitbox.z * 2), getDirection(state)}
+void engine::Entity::launchVertical(const double acceleration) const {
+	if (information.state.velocity.z == 0) {
+		information.state.velocity.z = acceleration;
+		information.state.position.z += acceleration;
+	}
 }
 
-void Entity::stop() {
-	state.acceleration = Vector2();
-	state.velocity = Vector2();
-	state.movementDirection = 0;
+engine::Ray engine::Entity::getView(const Orientation& offset) const {
+	return {information.state.position.withZ(information.state.position.z + information.hitbox.z * 2), (information.state.orientation + offset).getDirection()};
+}
+
+void engine::Entity::stop() const {
+	information.state.acceleration = Vector2();
+	information.state.velocity = Vector2();
+	information.state.movementDirection = 0;
 }

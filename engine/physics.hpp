@@ -25,9 +25,8 @@ namespace engine {
         Vector3 position;
         Vector3 velocity;
         Vector3 acceleration;
-        Vector3 hitbox;
 
-		double movementDirection;
+		double movementDirection{};
         Orientation orientation;
 
         void update(const double friction) {
@@ -36,9 +35,6 @@ namespace engine {
             acceleration *= 1 - friction;
         }
 
-        Vector2 getDirection() const {
-            const double dir = orientation.yaw + movementDirection;
-            return {std::sin(dir), std::cos(dir)};
-        }
+        explicit EntityState(const Vector3& position) : position(position) {}
     };
 }

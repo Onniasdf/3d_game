@@ -7,7 +7,6 @@
 #include <numbers>
 #include "io/input.hpp"
 #include "engine/physics.hpp"
-#include "datastructures/rgb_colour.hpp"
 #include "game/textures.hpp"
 #include <utility>
 

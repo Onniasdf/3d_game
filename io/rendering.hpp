@@ -1,7 +1,6 @@
 #pragma once
 
 #include <sstream>
-#include <iostream>
 #include "../datastructures/rgb_colour.hpp"
 #include <cstdint>
 #include "output.hpp"
@@ -15,7 +14,8 @@ namespace io {
         const std::string CLEAR_SCREEN = "\033[H\033[J";
         const std::string RESET_COLOUR = "\033[0m";
         const std::string START_COLOUR = "\033[38;5;";
-        const std::string END_COLOUR = "m@";
+        const char TEXTURE_CHARACTER = '@';
+        const std::string END_COLOUR = std::string("m") + TEXTURE_CHARACTER;
 
     public:
 
@@ -24,7 +24,7 @@ namespace io {
         void write(const RgbColour colour) {
             const uint32_t code = colour.toAnsiCode();
             if (currentColour == code) {
-                buffer << "@";
+                buffer << TEXTURE_CHARACTER;
                 return;
             }
             currentColour = code;
@@ -45,7 +45,6 @@ namespace io {
 			const std::string& str = buffer.str();
 			write_to_output(reinterpret_cast<const uint8_t*>(str.c_str()), str.size());
             buffer.str("");
-			buffer.clear();
         }
     };
 }

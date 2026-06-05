@@ -13,13 +13,11 @@ static double getTargetCoordinate(const double pos, const double sign) {
 		}
 		return target;
 	}
-	else {
-		const double target = std::floor(pos);
-		if (target == pos) {
-			return target - 1;
-		}
-		return target;
+	const double target = std::floor(pos);
+	if (target == pos) {
+		return target - 1;
 	}
+	return target;
 }
 
 enum CoordinateType {
@@ -46,7 +44,7 @@ RayEnd castRay(const engine::LimitedBlockWorld& world, const Vector3& start, con
 	Vector3 target = {getTargetCoordinate(start.x, sign.x), getTargetCoordinate(start.y, sign.y), getTargetCoordinate(start.z, sign.z) };
 	while (!world.get(position).has_value()) {
 		Vector3 steps = (target - position) / direction;
-		CoordinateType minType = minCoordinate(steps);
+		const CoordinateType minType = minCoordinate(steps);
 		double minSteps = 0;
 		switch (minType) {
 		case X:

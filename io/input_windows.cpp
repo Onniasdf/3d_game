@@ -10,24 +10,25 @@
 #include <algorithm>
 #include <cstdint>
 
+const int BUFFER_SIZE = 10;
 
 void io::InputListener::read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point, SpecialKey>>& buffer) const {
-	INPUT_RECORD records[10];
+	INPUT_RECORD records[BUFFER_SIZE];
 	DWORD count;
 	GetNumberOfConsoleInputEvents(handle, &count);
 	if (count == 0) return;
 	ReadConsoleInput(handle, records, std::min<DWORD>(BUFFER_SIZE, count), &count);
 	for (int32_t i = 0; i < count; i++) {
-		INPUT_RECORD record = records[i];
-		if (record.EventType == KEY_EVENT) {
-			if (record.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) {
+		auto [eventType, eventData] = records[i];
+		if (eventType == KEY_EVENT) {
+			if (eventData.KeyEvent.wVirtualKeyCode == VK_ESCAPE) {
 				buffer.emplace_back(ESCAPE);
 				continue;
 			}
-			buffer.emplace_back(KeyboardEvent(record.Event.KeyEvent.uChar.AsciiChar, record.Event.KeyEvent.bKeyDown));
+			buffer.emplace_back(KeyboardEvent(eventData.KeyEvent.uChar.AsciiChar, eventData.KeyEvent.bKeyDown));
 		}
-		if (record.EventType == MOUSE_EVENT) {
-			MOUSE_EVENT_RECORD event = record.Event.MouseEvent;
+		if (eventType == MOUSE_EVENT) {
+			MOUSE_EVENT_RECORD event = eventData.MouseEvent;
 			MouseButtons buttons = {};
 			if (event.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) {
 				buttons.left = true;

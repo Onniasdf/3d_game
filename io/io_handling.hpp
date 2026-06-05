@@ -7,7 +7,6 @@
 #include "../datastructures/vector3.hpp"
 #include "../game/player.hpp"
 #include <vector>
-#include <cstdint>
 #include <variant>
 
 namespace io {
@@ -24,13 +23,13 @@ namespace io {
 
         
     public:
-        IoHandler(const Orientation fieldOfView, const Point screenSize, double mouseSensivity, InputListener input) :
-        sensitivity(mouseSensivity),
+        IoHandler(const Orientation fieldOfView, const Point screenSize, const double mouseSensitivity, const InputListener& input) :
         orientationLimit({fieldOfView.yaw / 2, fieldOfView.pitch / 2}),
         orientationDelta({fieldOfView.yaw / screenSize.x, fieldOfView.pitch / screenSize.y}),
-        input(input) {}
+        input(input),
+        sensitivity(mouseSensitivity) {}
 
-        void writeOutput(engine::EntityInterface& player);
+        void writeOutput(const engine::EntityInterface& player);
 
         void readInput(engine::EntityInterface& player, bool& quit);
     };
