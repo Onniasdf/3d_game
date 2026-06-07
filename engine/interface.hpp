@@ -21,13 +21,13 @@ namespace engine {
     public:
         EntityInterface(LimitedBlockWorld& world, const Entity entity, const Environment& physics) : world(world), entity(entity), physics(physics) {}
 
-        void jump();
+        void jump() const;
 
-        void rotate(Orientation orientationChange);
+        void rotate(Orientation orientationChange) const;
 
-        void setMovementDirection(const Vector2& direction);
+        void setMovementDirection(const Vector2& direction) const;
 
-        void placeBlock(uint16_t id);
+        void placeBlock(uint16_t id) const;
 
         [[nodiscard]] BlockOffset findBlock(Orientation offset) const;
     };

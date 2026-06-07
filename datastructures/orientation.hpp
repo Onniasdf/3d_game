@@ -6,11 +6,11 @@
 struct Orientation {
     double yaw = 0, pitch = 0;
 
-    Orientation(double yaw, double pitch) : yaw(yaw), pitch(pitch) {}
+    Orientation(const double yaw, const double pitch) : yaw(yaw), pitch(pitch) {}
     Orientation() = default;
 
-    Vector3 getDirection() const {
-        Vector3 dir{std::cos(pitch) * std::sin(yaw),std::cos(pitch) * std::cos(yaw),std::sin(pitch)};
+    [[nodiscard]] Vector3 getDirection() const {
+        const Vector3 dir{std::cos(pitch) * std::sin(yaw),std::cos(pitch) * std::cos(yaw),std::sin(pitch)};
         return dir;
     }
 

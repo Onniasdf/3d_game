@@ -5,36 +5,52 @@
 #include "interface.hpp"
 #include <chrono>
 #include <algorithm>
+#include <filesystem>
 
-void engine::GameEngine::update() {
-    for (auto& [state, hitbox, _] : entities) {
-        Vector3 force{};
-        state.velocity.z -= physics.gravity;
-        const Vector2 points[4] = {{hitbox.x, hitbox.y}, {-hitbox.x, -hitbox.y}, {-hitbox.x, hitbox.y}, {hitbox.x, -hitbox.y}};
-        for (const Vector2& point : points) {
-            Vector3 pos = state.position + point;
-			pos.z -= hitbox.z;
-            if (!world.get(pos).has_value()) continue;
-			force.z = -state.velocity.z;
-        }
-        for (double i = 0; i <= hitbox.z + 1 ; i += 0.5) {
-            const double hitboxPos = std::min(i, hitbox.z);
-            for (Vector3 offset : points) {
-                offset.z = hitboxPos;
-                if (!world.get(state.position + offset).has_value()) continue;
-                if (const Vector3 difference = offset.abs(); difference.y <= hitbox.y) {
-                    force.y = -state.velocity.y;
-                } else if (difference.x <= hitbox.x) {
-                    force.x = -state.velocity.x;
-                }
-                break;
-            }
-        }
-        state.velocity += force;
-        state.update(physics.friction);
-    }
+
+static void updateEntityState(engine::EntityState& state, const double friction) {
+    state.position += state.velocity;
+    state.velocity += state.acceleration;
+    state.acceleration *= 1 - friction;
 }
 
+double closestBock(const Vector3& position, const Vector3& volume, const Vector3::Axis axis, const engine::LimitedBlockWorld& world, const double velocity) {
+    double minDistance = velocity;
+    const Vector3 end = (position + volume).ceil();
+    for (double z = position.z; z < end.z; z += 1.0) {
+        for (double y = position.y; y < end.y; y += 1.0) {
+            for (double x = position.x; x < end.x; x += 1.0) {
+                const Vector3 blockPosition = {x, y, z};
+                if (!world.get(blockPosition).has_value()) {
+                    continue;
+                }
+                if (const double distance = std::abs(blockPosition.get(axis) - position.get(axis)); distance < minDistance) {
+                    minDistance = distance;
+                }
+            }
+        }
+    }
+    return minDistance;
+}
+
+Vector3 limitMovement(const Vector3& position, const Vector3& hitbox, const Vector3& velocity, const engine::LimitedBlockWorld& world) {
+    const Vector3 target = position + velocity;
+    double xBlock = closestBock(position.withX(target.x), hitbox, Vector3::Axis::X, world, velocity.x);
+    double yBlock = closestBock(position.withY(target.y), hitbox, Vector3::Axis::Y, world, velocity.y);
+    double zBlock = closestBock(position.withZ(target.z), hitbox, Vector3::Axis::Z, world, velocity.z);
+    return {xBlock, yBlock, zBlock};
+}
+
+static void updateEntity(engine::EntityInformation& entity, const engine::Environment& physics, const engine::LimitedBlockWorld& world) {
+    entity.state.velocity = limitMovement(entity.state.position, entity.hitbox, entity.state.velocity, world);
+    updateEntityState(entity.state, physics.friction);
+}
+
+void engine::GameEngine::update() {
+    for (auto& e : entities) {
+        updateEntity(e, physics, world);
+    }
+}
 
 void engine::GameEngine::run() {
     std::chrono::time_point<std::chrono::steady_clock> tickTime = std::chrono::steady_clock::now();

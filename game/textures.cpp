@@ -3,9 +3,9 @@
 #include "textures.hpp"
 
 
-constexpr int PRESICION = 10;
+constexpr int PRECISION = 10;
 
-static RgbColour getBaseColour(game::Block type) {
+static RgbColour getBaseColour(const game::Block type) {
 	switch (type) {
 	case game::RED:
 		return { 255, 0, 0 };
@@ -32,14 +32,13 @@ static RgbColour getBaseColour(game::Block type) {
 	}
 }
 
-RgbColour game::resolveColour(Block type, const Vector3& offset) {
-	const Vector3 pos = (offset.min((Vector3(1, 1, 1) - offset).abs()) * PRESICION).floor();
+RgbColour game::resolveColour(const Block type, const Vector3& offset) {
+	const Vector3 pos = (offset.min((Vector3(1, 1, 1) - offset).abs()) * PRECISION).floor();
 	const bool nx = (pos.x == 0);
 	const bool ny = (pos.y == 0);
 	const bool nz = (pos.z == 0);
 
-	int zeroCount = (nx ? 1 : 0) + (ny ? 1 : 0) + (nz ? 1 : 0);
-	if (zeroCount >= 2 && type < 10) {
+	if (int zeroCount = (nx ? 1 : 0) + (ny ? 1 : 0) + (nz ? 1 : 0); zeroCount >= 2 && type < 10) {
 		return {};
 	}
 	return getBaseColour(type);

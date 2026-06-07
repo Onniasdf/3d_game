@@ -5,97 +5,32 @@
 #include <cstdlib>
 #include <algorithm>
 
-struct Vector2 {
-    double x = 0, y = 0;
+#include "vector2.hpp"
 
-    // Constructors
-    Vector2() = default;
-    Vector2(double x, double y) : x(x), y(y) {}
 
-    // Arithmetic operators
-    Vector2 operator+(const Vector2& other) const {
-        return { x + other.x, y + other.y };
-    }
-    Vector2 operator-(const Vector2& other) const {
-        return { x - other.x, y - other.y };
-    }
-    Vector2 operator-() const {
-        return { -x, -y };
-    }
-
-    Vector2 operator*(double scalar) const {
-        return { x * scalar, y * scalar };
-    }
-    Vector2 operator*(const Vector2& other) const {
-        return { x * other.x, y * other.y };
-    }
-    Vector2 operator/(double scalar) const {
-        return { x / scalar, y / scalar };
-    }
-    Vector2 operator/(const Vector2& other) const {
-        return { x / other.x, y / other.y };
-    }
-
-    // Compound assignment operators
-    void operator+=(const Vector2& other) {
-        x += other.x;
-        y += other.y;
-    }
-    void operator-=(const Vector2& other) {
-        x -= other.x;
-        y -= other.y;
-    }
-    void operator*=(double scalar) {
-        x *= scalar;
-        y *= scalar;
-    }
-    void operator/=(double scalar) {
-        x /= scalar;
-        y /= scalar;
-    }
-
-    // Math helpers
-    [[nodiscard]] double length() const {
-        return std::sqrt(x * x + y * y);
-    }
-
-    [[nodiscard]] Vector2 floor() const {
-        return { std::floor(x), std::floor(y) };
-    }
-    [[nodiscard]] Vector2 ceil() const {
-        return { std::ceil(x), std::ceil(y) };
-    }
-    [[nodiscard]] Vector2 round() const {
-        return { std::round(x), std::round(y) };
-    }
-    [[nodiscard]] Vector2 abs() const {
-        return { std::abs(x), std::abs(y) };
-    }
-    [[nodiscard]] Vector2 sign() const {
-        return { getSign(x), getSign(y) };
-    }
-
-    // Modifiers
-    [[nodiscard]] Vector2 withX(double newX) const {
-        return { newX, y };
-    }
-    [[nodiscard]] Vector2 withY(double newY) const {
-        return { x, newY };
-    }
-
-private:
-    static double getSign(double value) {
-        if (value > 0) return 1;
-        if (value < 0) return -1;
-        return 0;
-    }
-};
 struct Vector3 {
     double x = 0, y = 0, z = 0;
 
+    enum Axis {
+        X, Y, Z
+    };
+
     Vector3(const double x, const double y, const double z) : x(x), y(y), z(z) {}
-	Vector3(const Vector2& vec2) : x(vec2.x), y(vec2.y), z(0) {}
+    explicit Vector3(const Vector2& vec2) : x(vec2.x), y(vec2.y) {}
     Vector3() = default;
+
+    [[nodiscard]] double get(const Axis axis) const {
+        switch (axis) {
+            case X:
+                return x;
+            case Y:
+                return y;
+            case Z:
+                return z;
+        }
+        return 0;
+    }
+
     Vector3 operator+(const Vector3& other) const {
         return {x + other.x, y + other.y, z + other.z};
     }
@@ -134,7 +69,7 @@ struct Vector3 {
         z -= other.z;
     }
 
-    Vector3 clamp(double min, double max) const {
+    [[nodiscard]] Vector3 clamp(const double min, const double max) const {
         return {std::clamp(x, min, max), std::clamp(y, min, max), std::clamp(z, min, max)};
 	}
 
@@ -159,6 +94,10 @@ struct Vector3 {
 
     [[nodiscard]] double length() const {
         return std::sqrt(x * x + y * y + z * z);
+    }
+
+    [[nodiscard]] double lengthSquared() const {
+        return x * x + y * y + z * z;
     }
 
     [[nodiscard]] Vector3 floor() const {
@@ -220,14 +159,3 @@ private:
     }
 };
 
-struct Point {
-    uint32_t x, y;
-
-     Point operator+(const Point& other) const {
-        return {x + other.x, y + other.y};
-    }
-
-    Point operator-(const Point& other) const {
-         return {x - other.x, y - other.y};
-     }
-};

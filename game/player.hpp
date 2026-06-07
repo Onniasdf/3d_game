@@ -29,9 +29,9 @@ namespace game {
 		Player() = default;
 
 		void selectItem(uintptr_t index);
-		uint16_t getSelectedItem() const;
+		[[nodiscard]] uint16_t getSelectedItem() const;
 		void move(DirectionType direction, bool set);
-        Direction getMovementDirection() const {
+        [[nodiscard]] Direction getMovementDirection() const {
             return movementDirection;
 		}
 	};

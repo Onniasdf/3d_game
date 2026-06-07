@@ -1,6 +1,5 @@
 #pragma once
 
-#include "block_world.hpp"
 #include "../datastructures/vector3.hpp"
 
 struct RayEnd {
@@ -8,5 +7,16 @@ struct RayEnd {
 	Vector3 lastBlock;
 };
 
-RayEnd castRay(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction);
+class RayStateMachine {
+	Vector3 sign;
+	Vector3 lastPosition;
+	Vector3 position;
+	Vector3 target;
+	Vector3 direction;
+
+public:
+	RayStateMachine(const Vector3 &start, const Vector3 &direction);
+	Vector3 step();
+	[[nodiscard]] RayEnd end() const;
+};
 

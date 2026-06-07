@@ -29,12 +29,6 @@ namespace engine {
 		double movementDirection{};
         Orientation orientation;
 
-        void update(const double friction) {
-            position += velocity;
-            velocity += acceleration;
-            acceleration *= 1 - friction;
-        }
-
         explicit EntityState(const Vector3& position) : position(position) {}
     };
 }

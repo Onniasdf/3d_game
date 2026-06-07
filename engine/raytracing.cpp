@@ -20,48 +20,51 @@ static double getTargetCoordinate(const double pos, const double sign) {
 	return target;
 }
 
-enum CoordinateType {
-	X, Y, Z
-};
 
-static CoordinateType minCoordinate(Vector3& vec) {
+static Vector3::Axis minCoordinate(const Vector3& vec) {
 	double min = vec.x;
-	CoordinateType minType = X;
+	Vector3::Axis minType = Vector3::X;
 	if (vec.y < min) {
 		min = vec.y;
-		minType = Y;
+		minType = Vector3::Y;
 	}
 	if (vec.z < min) {
-		minType = Z;
+		minType = Vector3::Z;
 	}
 	return minType;
 }
 
-RayEnd castRay(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction) {
-	const Vector3 sign = direction.sign();
-	Vector3 lastPosition = start;
-	Vector3 position = start;
-	Vector3 target = {getTargetCoordinate(start.x, sign.x), getTargetCoordinate(start.y, sign.y), getTargetCoordinate(start.z, sign.z) };
-	while (!world.get(position).has_value()) {
-		Vector3 steps = (target - position) / direction;
-		const CoordinateType minType = minCoordinate(steps);
-		double minSteps = 0;
-		switch (minType) {
-		case X:
+RayStateMachine::RayStateMachine(const Vector3 &start, const Vector3 &direction) {
+	this->direction = direction;
+	lastPosition = start;
+	position = start;
+	sign = direction.sign();
+	target = {getTargetCoordinate(start.x, sign.x), getTargetCoordinate(start.y, sign.y), getTargetCoordinate(start.z, sign.z) };
+}
+
+Vector3 RayStateMachine::step() {
+	const Vector3 steps = (target - position) / direction;
+	const Vector3::Axis minType = minCoordinate(steps);
+	double minSteps = 0;
+	switch (minType) {
+		case Vector3::X:
 			target.x += sign.x;
 			minSteps = steps.x;
 			break;
-		case Y:
+		case Vector3::Y:
 			target.y += sign.y;
 			minSteps = steps.y;
 			break;
-		case Z:
+		case Vector3::Z:
 			target.z += sign.z;
 			minSteps = steps.z;
 			break;
-		}
-		lastPosition = position;
-		position += direction * minSteps;
 	}
+	lastPosition = position;
+	position += direction * minSteps;
+	return position;
+}
+
+RayEnd RayStateMachine::end() const {
 	return {position, lastPosition};
 }

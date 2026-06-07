@@ -6,29 +6,38 @@
 #include "../datastructures/vector3.hpp"
 #include <optional>
 
-void engine::EntityInterface::jump() {
+RayEnd seekBlock(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction) {
+    RayStateMachine stateMachine{start, direction};
+    Vector3 position;
+    do {
+        position = stateMachine.step();
+    } while (!world.get(position).has_value());
+    return stateMachine.end();
+}
+
+void engine::EntityInterface::jump() const {
     entity.launchVertical(physics.jumpSpeed);
 }
 
-void engine::EntityInterface::rotate(const Orientation orientationChange) {
+void engine::EntityInterface::rotate(const Orientation orientationChange) const {
     entity.rotateView(orientationChange);
     entity.updateMovementDirection();
 }
 
-void engine::EntityInterface::setMovementDirection(const Vector2& directionDelta) {
-    entity.rotateMovement(directionDelta);
+void engine::EntityInterface::setMovementDirection(const Vector2& direction) const {
+    entity.rotateMovement(direction);
     entity.updateMovementDirection();
 }
 
-void engine::EntityInterface::placeBlock(uint16_t id) {
+void engine::EntityInterface::placeBlock(uint16_t id) const {
     auto [direction, start] = entity.getView({});
-    auto [hit, lastBlock] = castRay(world, start, direction);
+    auto [hit, lastBlock] = seekBlock(world, start, direction);
     world.set(lastBlock, id);
 }
 
 engine::BlockOffset engine::EntityInterface::findBlock(const Orientation offset) const {
     auto [direction, start] = entity.getView(offset);
-    auto [hit, lastBlock] = castRay(world, start, direction);
+    auto [hit, lastBlock] = seekBlock(world, start, direction);
     const uint16_t block = world.get(hit).value();
     const Vector3 blockOffset = hit - hit.floor();
     return { block, blockOffset };
