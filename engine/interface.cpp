@@ -30,13 +30,13 @@ void engine::EntityInterface::setMovementDirection(const Vector2& direction) con
 }
 
 void engine::EntityInterface::placeBlock(uint16_t id) const {
-    auto [direction, start] = entity.getView({});
+    auto [start, direction] = entity.getView({});
     auto [hit, lastBlock] = seekBlock(world, start, direction);
     world.set(lastBlock, id);
 }
 
 engine::BlockOffset engine::EntityInterface::findBlock(const Orientation offset) const {
-    auto [direction, start] = entity.getView(offset);
+    auto [start, direction] = entity.getView(offset);
     auto [hit, lastBlock] = seekBlock(world, start, direction);
     const uint16_t block = world.get(hit).value();
     const Vector3 blockOffset = hit - hit.floor();
@@ -47,8 +47,10 @@ void engine::WorldInterface::end() const {
     running = false;
 }
 
-size_t engine::WorldInterface::addEntity(const Vector3& position, const Vector3& hitbox) const {
-    const EntityInformation entity{EntityState(position), hitbox, physics.movementAcceleration};
+size_t engine::WorldInterface::addEntity(const Vector3& position, const Vector3& size) const {
+    const Vector3 hitbox = size / 2;
+    EntityInformation entity{EntityState(position.withZ(position.z + hitbox.z)), hitbox, physics.movementAcceleration};
+    entity.state.acceleration.z = -physics.gravity;
     const size_t id = entities.size();
     entities.push_back(entity);
     return id;

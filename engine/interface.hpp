@@ -45,7 +45,7 @@ namespace engine {
         
         void end() const;
 
-        [[nodiscard]] size_t addEntity(const Vector3& position, const Vector3& hitbox) const;
+        [[nodiscard]] size_t addEntity(const Vector3& position, const Vector3& size) const;
 
         [[nodiscard]] std::optional<EntityInterface> getEntity(size_t id) const;
     };

@@ -5,8 +5,8 @@
 
 namespace engine {
     struct Ray {
-        const Vector3 direction;
         const Vector3 start;
+        const Vector3 direction;
     };
     struct EntityInformation {
         EntityState state;

@@ -36,7 +36,7 @@ void engine::Entity::launchVertical(const double acceleration) const {
 }
 
 engine::Ray engine::Entity::getView(const Orientation& offset) const {
-	return {information.state.position.withZ(information.state.position.z + information.hitbox.z * 2), (information.state.orientation + offset).getDirection()};
+	return {information.state.position.withZ(information.state.position.z + information.hitbox.z), (information.state.orientation + offset).getDirection()};
 }
 
 void engine::Entity::stop() const {
