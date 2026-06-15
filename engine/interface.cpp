@@ -6,12 +6,12 @@
 #include "../datastructures/vector3.hpp"
 #include <optional>
 
-RayEnd seekBlock(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction) {
+static RayEnd seekBlock(const engine::LimitedBlockWorld& world, const Vector3& start, const Vector3& direction) {
     RayStateMachine stateMachine{start, direction};
-    Vector3 position;
-    do {
+    Vector3 position = stateMachine.step();
+    while (!world.get(position).has_value()) {
         position = stateMachine.step();
-    } while (!world.get(position).has_value());
+    }
     return stateMachine.end();
 }
 
@@ -25,6 +25,10 @@ void engine::EntityInterface::rotate(const Orientation orientationChange) const 
 }
 
 void engine::EntityInterface::setMovementDirection(const Vector2& direction) const {
+    if (direction.length() == 0) {
+		entity.stop();
+		return;
+    }
     entity.rotateMovement(direction);
     entity.updateMovementDirection();
 }
@@ -47,10 +51,8 @@ void engine::WorldInterface::end() const {
     running = false;
 }
 
-size_t engine::WorldInterface::addEntity(const Vector3& position, const Vector3& size) const {
-    const Vector3 hitbox = size / 2;
-    EntityInformation entity{EntityState(position.withZ(position.z + hitbox.z)), hitbox, physics.movementAcceleration};
-    entity.state.acceleration.z = -physics.gravity;
+size_t engine::WorldInterface::addEntity(const Vector3& position, const Vector3& hitbox) const {
+    const EntityInformation entity{EntityState(position), hitbox, physics.movementAcceleration};
     const size_t id = entities.size();
     entities.push_back(entity);
     return id;

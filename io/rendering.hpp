@@ -42,8 +42,8 @@ namespace io {
         void flush() {
             buffer << RESET_COLOUR;
             currentColour = 0;
-			const std::string& str = buffer.str();
-			write_to_output(reinterpret_cast<const uint8_t*>(str.c_str()), str.size());
+			const std::string_view str = buffer.view();
+			write_to_output(reinterpret_cast<const uint8_t*>(str.data()), str.size());
             buffer.str("");
         }
     };

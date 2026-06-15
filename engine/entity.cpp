@@ -1,4 +1,5 @@
 #include "entity.hpp"
+#include <numbers>
 
 Vector2 getDirection(const engine::EntityState& state) {
     const double dir = state.orientation.yaw + state.movementDirection;
@@ -28,10 +29,9 @@ void engine::Entity::rotateView(const Orientation& direction) const {
     }
 }
 
-void engine::Entity::launchVertical(const double acceleration) const {
+void engine::Entity::launchVertical(const double velocity) const {
 	if (information.state.velocity.z == 0) {
-		information.state.velocity.z = acceleration;
-		information.state.position.z += acceleration;
+		information.state.velocity.z = velocity;
 	}
 }
 

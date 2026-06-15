@@ -14,7 +14,7 @@ static void updateEntityState(engine::EntityState& state, const double friction)
     state.acceleration *= 1 - friction;
 }
 
-double closestBock(const Vector3& position, const Vector3& originalPosition, const Vector3& volume, const Vector3::Axis axis, const engine::LimitedBlockWorld& world, const double velocity) {
+static double closestBock(const Vector3& position, const double originalAxisPosition, const Vector3& volume, const Vector3::Axis axis, const engine::LimitedBlockWorld& world, const double velocity) {
     double minDistance = std::abs(velocity);
     const Vector3 end = (position + volume).ceil();
     for (double z = position.z; z < end.z; z += 1) {
@@ -24,7 +24,7 @@ double closestBock(const Vector3& position, const Vector3& originalPosition, con
                 if (!world.get(blockPosition).has_value()) {
                     continue;
                 }
-                if (const double distance = std::abs(blockPosition.get(axis) - originalPosition.get(axis)); distance < minDistance) {
+                if (const double distance = std::abs(blockPosition.get(axis) - originalAxisPosition); distance < minDistance) {
                     minDistance = distance;
                 }
             }
@@ -33,15 +33,18 @@ double closestBock(const Vector3& position, const Vector3& originalPosition, con
     return minDistance;
 }
 
-Vector3 limitMovement(const Vector3& position, const Vector3& hitbox, const Vector3& velocity, const engine::LimitedBlockWorld& world) {
+static Vector3 limitMovement(const Vector3& position, const Vector3& hitbox, const Vector3& velocity, const engine::LimitedBlockWorld& world) {
     const Vector3 sign = velocity.sign();
-    const Vector3 start = position - hitbox;
-    const Vector3 target = start + velocity;
     const Vector3 originalPosition = position + hitbox * sign;
+    const Vector3 start = originalPosition + Vector3(
+        velocity.x < 0 ? velocity.x : 0, 
+        velocity.y < 0 ? velocity.y : 0, 
+        velocity.z < 0 ? velocity.z : 0);
     const Vector3 volume = hitbox * 2;
-    const double xBlock = velocity.x == 0 ? 0 : closestBock(start.withX(target.x), originalPosition, volume, Vector3::X, world, velocity.x);
-    const double yBlock = velocity.y == 0 ? 0 : closestBock(start.withY(target.y), originalPosition, volume, Vector3::Y, world, velocity.y);
-    const double zBlock = velocity.z == 0 ? 0 : closestBock(start.withZ(target.z), originalPosition, volume, Vector3::Z, world, velocity.z);
+	const Vector3 absVelocity = velocity.abs();
+    const double xBlock = velocity.x == 0 ? 0 : closestBock(start, originalPosition.x, volume.withX(absVelocity.x), Vector3::X, world, velocity.x);
+    const double yBlock = velocity.y == 0 ? 0 : closestBock(start, originalPosition.y, volume.withY(absVelocity.y), Vector3::Y, world, velocity.y);
+    const double zBlock = velocity.z == 0 ? 0 : closestBock(start, originalPosition.z, volume.withZ(absVelocity.z), Vector3::Z, world, velocity.z);
     return Vector3(xBlock, yBlock, zBlock) * sign;
 }
 
