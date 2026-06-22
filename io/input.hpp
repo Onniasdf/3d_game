@@ -5,6 +5,13 @@
 
 
 namespace io {
+    enum EventType {
+        KEYBOARD,
+        MOUSE,
+        MOUSE_POSITION,
+        SPECIAL
+    }
+
     struct MouseButtons {
         bool left;
 		bool right;
@@ -12,7 +19,6 @@ namespace io {
 		bool extra1;
 		bool extra2;
     };
-
 
     struct KeyboardEvent {
         char key;

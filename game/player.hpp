@@ -19,6 +19,10 @@ namespace game {
         bool operator==(const Direction& other) const {
             return up == other.up && down == other.down && left == other.left && right == other.right;
         }
+
+        Vector3 getVector() {
+            return {static_cast<double>(right) - static_cast<double>(left), static_cast<double>(up) - static_cast<double>(down)};
+        }
     };
 
 
