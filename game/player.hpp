@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdarg>
 #include <cstdint>
+#include "../datastructures/vector2.hpp"
 
 namespace game {
     enum DirectionType {
@@ -20,7 +21,7 @@ namespace game {
             return up == other.up && down == other.down && left == other.left && right == other.right;
         }
 
-        Vector3 getVector() {
+        [[nodiscard]] Vector2 getVector() const {
             return {static_cast<double>(right) - static_cast<double>(left), static_cast<double>(up) - static_cast<double>(down)};
         }
     };

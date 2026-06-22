@@ -17,6 +17,9 @@ class RayStateMachine {
 public:
 	RayStateMachine(const Vector3 &start, const Vector3 &direction);
 	Vector3 step();
-	[[nodiscard]] RayEnd end() const;
+
+	[[nodiscard]] RayEnd end() const {
+		return {position, lastPosition};
+	}
 };
 

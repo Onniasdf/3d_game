@@ -34,7 +34,7 @@ static double closestBock(const Vector3& position, const double originalAxisPosi
 }
 
 static Vector3 limitMovement(const Vector3& position, const Vector3& hitbox, const Vector3& velocity, const engine::LimitedBlockWorld& world) {
-    const Vector3 sign = velocity.sign();
+    const Vector3 sign = Vector3(velocity.sign());
     const Vector3 originalPosition = position + hitbox * sign;
     const Vector3 start = originalPosition + Vector3(
         velocity.x < 0 ? velocity.x : 0, 

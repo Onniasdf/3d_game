@@ -14,4 +14,5 @@ add_executable(3d_game
         io/io_handling.cpp
         io/output_windows.cpp
         game/player.cpp
-        game/textures.cpp)
+        game/textures.cpp
+        datastructures/point.hpp)

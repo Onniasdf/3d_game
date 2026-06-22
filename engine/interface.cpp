@@ -44,7 +44,7 @@ engine::BlockOffset engine::EntityInterface::findBlock(const Orientation offset)
     auto [hit, lastBlock] = seekBlock(world, start, direction);
     const uint16_t block = world.get(hit).value();
     const Vector3 blockOffset = hit - hit.floor();
-    return { block, blockOffset };
+    return {block, blockOffset};
 }
 
 void engine::WorldInterface::end() const {

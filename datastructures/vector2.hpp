@@ -90,14 +90,3 @@ private:
     }
 };
 
-struct Point {
-    uint32_t x, y;
-
-    Point operator+(const Point& other) const {
-        return {x + other.x, y + other.y};
-    }
-
-    Point operator-(const Point& other) const {
-        return {x - other.x, y - other.y};
-    }
-};

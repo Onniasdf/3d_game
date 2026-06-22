@@ -39,7 +39,7 @@ namespace io {
         #endif
     public:
         static InputListener create();
-        void read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point, SpecialKey>>& buffer) const;
+        void read(std::vector<std::variant<KeyboardEvent, MouseButtons, Point2, SpecialKey>>& buffer) const;
         ~InputListener();
     };
 }

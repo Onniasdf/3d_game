@@ -3,7 +3,6 @@
 #include "../game/textures.hpp"
 #include <variant>
 #include <cctype>
-#include "../datastructures/vector3.hpp"
 #include "../datastructures/orientation.hpp"
 #include "input.hpp"
 #include "../game/player.hpp"
@@ -25,8 +24,8 @@ void io::IoHandler::readInput(engine::EntityInterface& entity, bool& quit) {
 	quit = false;
 	for (auto& data : inputBuffer) {
 		switch (data.index()) {
-			case io::KEYBOARD:
-				auto [key, down] = std::get<io::KEYBOARD>(data);
+			case KEYBOARD: {
+				auto [key, down] = std::get<KEYBOARD>(data);
 				game::Direction start = player.getMovementDirection();
 				switch (static_cast<char>(std::tolower(static_cast<unsigned char>(key)))) {
 					case 'w':
@@ -51,21 +50,29 @@ void io::IoHandler::readInput(engine::EntityInterface& entity, bool& quit) {
 						}
 				}
 				if (game::Direction direction = player.getMovementDirection(); start != direction) {
-					entity.setMovementDirection({static_cast<double>(direction.right) - static_cast<double>(direction.left), static_cast<double>(direction.up) - static_cast<double>(direction.down)});
+					entity.setMovementDirection(direction.getVector());
 				}
-			case io::MOUSE:
-				if (const MouseButtons mouseButtons = std::get<io::MOUSE>(data); mouseButtons.right) {
+				break;
+			}
+			case MOUSE: {
+				if (const MouseButtons mouseButtons = std::get<MOUSE>(data); mouseButtons.right) {
 					entity.placeBlock(player.getSelectedItem());
 				}
-			case io::MOUSE_POSITION:
-				const Point point = std::get<io::MOUSE_POSITION>(data);
+				break;
+			}
+			case MOUSE_POSITION: {
+				const Point2 point = std::get<MOUSE_POSITION>(data);
 				const Orientation rotation((static_cast<int32_t>(point.x) - static_cast<int32_t>(mousePointer.x)) * sensitivity, (static_cast<int32_t>(point.y) - static_cast<int32_t>(mousePointer.y)) * sensitivity);
 				mousePointer = point;
 				entity.rotate(rotation);
-			case io::SPECIAL:
-				if (const SpecialKey specialKey = std::get<io::SPECIAL>(data); specialKey == ESCAPE) {
+				break;
+			}
+			case SPECIAL: {
+				if (const SpecialKey specialKey = std::get<SPECIAL>(data); specialKey == ESCAPE) {
 					quit = true;
 				}
+				break;
+			}
 		}
 	}
 	inputBuffer.clear();

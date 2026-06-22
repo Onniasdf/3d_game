@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <algorithm>
 
+#include "point.hpp"
 #include "vector2.hpp"
 
 
@@ -17,6 +18,7 @@ struct Vector3 {
 
     Vector3(const double x, const double y, const double z) : x(x), y(y), z(z) {}
     explicit Vector3(const Vector2& vec2) : x(vec2.x), y(vec2.y) {}
+    explicit Vector3(const Sign3 sign) : x(sign.x), y(sign.y), z(sign.z) {}
     Vector3() = default;
 
     [[nodiscard]] double get(const Axis axis) const {
@@ -112,7 +114,11 @@ struct Vector3 {
         return {std::round(x), std::round(y), std::round(z)};
     }
 
-    [[nodiscard]] Vector3 sign() const {
+    [[nodiscard]] Vector3 roundTowards(const Sign3 sign) const {
+        return {roundTowards(x, sign.x), roundTowards(y, sign.y), roundTowards(z, sign.z)};
+    }
+
+    [[nodiscard]] Sign3 sign() const {
         return {getSign(x), getSign(y), getSign(z)};
     }
 
@@ -126,6 +132,19 @@ struct Vector3 {
 
     [[nodiscard]] double min() const {
         return std::min(x, std::min(y, z));
+    }
+
+    [[nodiscard]] Axis minAxis() const {
+        double min = x;
+        Axis minType = X;
+        if (y < min) {
+            min = y;
+            minType = Y;
+        }
+        if (z < min) {
+            minType = Z;
+        }
+        return minType;
     }
 
     [[nodiscard]] Vector3 min(const Vector3& other) const {
@@ -148,14 +167,25 @@ struct Vector3 {
     }
 
 private:
-    static double getSign(double value) {
+    static Sign getSign(double value) {
         if (value > 0) {
-            return 1;
+            return Positive;
         }
         if (value < 0) {
-            return -1;
+            return Negative;
         }
-        return 0;
+        return Undefined;
+    }
+
+    static double roundTowards(const double value, const Sign sign) {
+        switch (sign) {
+            case Positive:
+                return std::ceil(value);
+            case Negative:
+                return std::floor(value);
+            default:
+                return value;
+        }
     }
 };
 

@@ -15,15 +15,15 @@ namespace io {
         Orientation orientationLimit;
         Orientation orientationDelta;
         InputListener input;
-        std::vector<std::variant<KeyboardEvent, MouseButtons, Point, SpecialKey>> inputBuffer;
-        Point mousePointer{};
+        std::vector<std::variant<KeyboardEvent, MouseButtons, Point2, SpecialKey>> inputBuffer;
+        Point2 mousePointer{};
         double sensitivity;
         
         game::Player player{};
 
         
     public:
-        IoHandler(const Orientation fieldOfView, const Point screenSize, const double mouseSensitivity, const InputListener& input) :
+        IoHandler(const Orientation fieldOfView, const Point2 screenSize, const double mouseSensitivity, const InputListener& input) :
         orientationLimit({fieldOfView.yaw / 2, fieldOfView.pitch / 2}),
         orientationDelta({fieldOfView.yaw / screenSize.x, fieldOfView.pitch / screenSize.y}),
         input(input),
